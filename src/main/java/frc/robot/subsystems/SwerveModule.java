@@ -47,7 +47,7 @@ public class SwerveModule {
 
         driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
         driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
-        turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderRot2Rad);
+        turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderPPRad);
         //turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
@@ -87,6 +87,8 @@ public class SwerveModule {
 
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
+        
+        
     }
 
     public void setDesiredState(SwerveModuleState state) {

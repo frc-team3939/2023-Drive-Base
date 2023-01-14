@@ -99,6 +99,14 @@ public class SwerveSubsystem extends SubsystemBase {
         /**odometer.update(getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(),
                 backRight.getState());*/
         SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putString("Swerve frontLeft current state", frontLeft.getState().toString());
+        SmartDashboard.putString("Swerve frontRight current state", frontRight.getState().toString());
+        SmartDashboard.putString("Swerve backLeft current state", backLeft.getState().toString());
+        SmartDashboard.putString("Swerve backRight current state", backRight.getState().toString());
+        SmartDashboard.putNumber("Angle Encoder Left Front", frontLeft.getTurningPosition());
+        SmartDashboard.putNumber("Angle Encoder Right Front", frontRight.getTurningPosition());
+        SmartDashboard.putNumber("Angle Encoder Left Back ", backLeft.getTurningPosition());
+        SmartDashboard.putNumber("Angle Encoder Right Back", backRight.getTurningPosition());
         //SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     }
 
