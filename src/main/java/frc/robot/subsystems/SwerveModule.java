@@ -54,10 +54,10 @@ public class SwerveModule {
         if (isFL = false) {
             turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         } else {
-            turningPidController = new PIDController(ModuleConstants.kPTurningFL, 0, 0);
+            turningPidController = new PIDController(ModuleConstants.kPTurningFL, 0.000001, 0);
         }
 
-        //turningPidController.enableContinuousInput(-Math.PI, Math.PI);
+        turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
     }
