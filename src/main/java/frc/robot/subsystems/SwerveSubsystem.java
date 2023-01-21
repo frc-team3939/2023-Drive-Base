@@ -107,13 +107,18 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Swerve frontRight current state", frontRight.getState().toString());
         SmartDashboard.putString("Swerve backLeft current state", backLeft.getState().toString());
         SmartDashboard.putString("Swerve backRight current state", backRight.getState().toString());
-        SmartDashboard.putNumber("Angle Encoder Left Front", frontLeft.getTurningPosition());
-        SmartDashboard.putNumber("Angle Encoder Right Front", frontRight.getTurningPosition());
-        SmartDashboard.putNumber("Angle Encoder Left Back ", backLeft.getTurningPosition());
-        SmartDashboard.putNumber("Angle Encoder Right Back", backRight.getTurningPosition());
+        SmartDashboard.putNumber("Angle Encoder Left Front", frontLeft.getRawTurningEncoder());
+        SmartDashboard.putNumber("Angle Encoder Right Front", frontRight.getRawTurningEncoder());
+        SmartDashboard.putNumber("Angle Encoder Left Back ", backLeft.getRawTurningEncoder());
+        SmartDashboard.putNumber("Angle Encoder Right Back", backRight.getRawTurningEncoder());
         //SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     }
 
+    
+
+    public double testBR() {
+        return backRight.getTurningPosition() + 2 * Math.PI;
+    }
     public void stopModules() {
         frontLeft.stop();
         frontRight.stop();

@@ -45,7 +45,7 @@ public class SwerveModule {
 
         driveEncoder = driveMotor.getEncoder();
         turningEncoder = new Encoder(angleEncoderIds[0], angleEncoderIds[1]);
-
+        
         driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
         driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
         turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderPPRad);
@@ -68,6 +68,10 @@ public class SwerveModule {
 
     public double getTurningPosition() {
         return turningEncoder.getDistance();
+    }
+
+    public double getRawTurningEncoder() {
+        return turningEncoder.getRaw();
     }
 
     public double getDriveVelocity() {
@@ -96,7 +100,9 @@ public class SwerveModule {
         
         
     }
-
+    public void testTurnMotor() {
+        turningMotor.set(ControlMode.PercentOutput, 0.5);
+    }
     public void setDesiredState(SwerveModuleState state) {
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
