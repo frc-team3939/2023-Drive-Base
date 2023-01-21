@@ -89,6 +89,9 @@ public class SwerveModule {
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
 
+    public PIDController getPIDController() {
+        return turningPidController;
+    }
     public void resetEncoders() {
         driveEncoder.setPosition(0);
         //turningEncoder.setPosition(/*getAbsoluteEncoderRad()*/);

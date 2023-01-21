@@ -46,7 +46,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         //new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
-        button2.whileTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0, new Rotation2d(swerveSubsystem.testBR()))));
+        button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
 }
 
     public Command getAutonomousCommand() {

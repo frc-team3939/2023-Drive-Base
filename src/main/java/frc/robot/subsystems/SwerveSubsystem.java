@@ -11,9 +11,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import java.io.PrintStream;
 
 //test
 public class SwerveSubsystem extends SubsystemBase {
+    private double testValueBR;
     private final SwerveModule frontLeft = new SwerveModule(
             DriveConstants.kFrontLeftDriveMotorPort,
             DriveConstants.kFrontLeftTurningMotorPort,
@@ -69,6 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
               }); */
 
     public SwerveSubsystem() {
+        testValueBR = 0;
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -117,7 +120,11 @@ public class SwerveSubsystem extends SubsystemBase {
     
 
     public double testBR() {
-        return backRight.getTurningPosition() + 2 * Math.PI;
+        
+        testValueBR = testValueBR + Math.PI/4;
+        SmartDashboard.putNumber("most reasonable code print", testValueBR);
+        System.out.print(testValueBR);
+        return testValueBR;
     }
     public void stopModules() {
         frontLeft.stop();
@@ -125,7 +132,9 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.stop();
         backRight.stop();
     }
-
+    public boolean getBRTurningSetpoint() {
+        return backRight.getPIDController().atSetpoint();
+    }
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         frontLeft.setDesiredState(desiredStates[0]);

@@ -24,8 +24,9 @@ public class Turn360 extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  
+    
   }
+
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -33,16 +34,18 @@ public class Turn360 extends CommandBase {
     SwerveModuleState[] sms = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), input}; 
     swerveSubsystem.setModuleStates(sms);
     SmartDashboard.putNumber("test", 1);
-    SmartDashboard.putString("testBR", sms[3].toString());
+    SmartDashboard.putString("testBR", input.toString());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    swerveSubsystem.stopModules();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
