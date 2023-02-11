@@ -20,16 +20,24 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.CloseClaw;
+import frc.robot.commands.OpenClaw;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwivleSubsystem;
 import frc.robot.commands.Turn360;
 
 public class RobotContainer {
 
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+    private final SwivleSubsystem swivleSubsystem = new SwivleSubsystem();
+    private final ClawSubsystem clawSubsystem = new ClawSubsystem();
 
     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
     Trigger button2 = new JoystickButton(driverJoytick, 2);
+    Trigger button11 = new JoystickButton(driverJoytick, 11);
+    Trigger button12 = new JoystickButton(driverJoytick, 12);
 
     public RobotContainer() {
         
@@ -47,6 +55,8 @@ public class RobotContainer {
         //new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
         button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
+        button11.onTrue(new OpenClaw(clawSubsystem));
+        button12.onTrue(new CloseClaw(clawSubsystem));
 }
 
     public Command getAutonomousCommand() {
