@@ -81,6 +81,8 @@ public final class Constants {
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+
+        
     }
 
     public static final class AutoConstants {
@@ -101,13 +103,21 @@ public final class Constants {
 
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
+        public static final int kSwivelControllerPort = 1;
 
         public static final int kDriverYAxis = 1;
         public static final int kDriverXAxis = 0;
         public static final int kDriverRotAxis = 4;
         public static final int kDriverFieldOrientedButtonIdx = 1;
 
+        public static final int kSwivelYAxis = 1;
+
         public static final double kDeadband = 0.05;
         public static final double kZDeadband = 0.2;
+
+        public static final double kSwivelDeadband = 0.2;
+        public static final double kSwivelMaxPercentSpeed = 30;
+
+        
     }
 }

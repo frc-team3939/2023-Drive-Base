@@ -23,6 +23,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.CloseClaw;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.SwivelJoystickCommand;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwivleSubsystem;
@@ -35,6 +36,7 @@ public class RobotContainer {
     private final ClawSubsystem clawSubsystem = new ClawSubsystem();
 
     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
+    private final Joystick swivelJoystick = new Joystick((OIConstants.kSwivelControllerPort));
     Trigger button2 = new JoystickButton(driverJoytick, 2);
     Trigger button11 = new JoystickButton(driverJoytick, 11);
     Trigger button12 = new JoystickButton(driverJoytick, 12);
@@ -48,6 +50,9 @@ public class RobotContainer {
                 () -> driverJoytick.getZ(),
                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
         
+        swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
+                swivleSubsystem,
+                () -> driverJoytick.getRawAxis(OIConstants.kSwivelYAxis)));
         configureButtonBindings();
     }
 

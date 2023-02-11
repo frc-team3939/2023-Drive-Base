@@ -89,6 +89,10 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
 
+    public double[] getWheelAbsReadings() {
+        return null;
+
+    }
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
     }
