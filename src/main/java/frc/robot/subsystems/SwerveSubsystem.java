@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -110,6 +112,19 @@ public class SwerveSubsystem extends SubsystemBase {
         /**odometer.update(getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(),
                 backRight.getState());*/
         SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putNumber("FL ABS Voltage", frontLeft.getRawAbsoluteEncoderVoltage());
+        SmartDashboard.putNumber("FR ABS Voltage", frontRight.getRawAbsoluteEncoderVoltage());
+        SmartDashboard.putNumber("BL ABS Voltage", backLeft.getRawAbsoluteEncoderVoltage());
+        SmartDashboard.putNumber("BR ABS Voltage", backRight.getRawAbsoluteEncoderVoltage());
+        SmartDashboard.putNumber("FL ABS Calculated Angle" , frontLeft.getAbsoluteEncoderRad() * 180/Math.PI);
+        SmartDashboard.putNumber("FR ABS Calculated Angle" , frontRight.getAbsoluteEncoderRad() * 180/Math.PI);
+        SmartDashboard.putNumber("BL ABS Calculated Angle" , backLeft.getAbsoluteEncoderRad() * 180/Math.PI);
+        SmartDashboard.putNumber("BR ABS Calculated Angle" , backRight.getAbsoluteEncoderRad() * 180/Math.PI);
+        SmartDashboard.putNumber("FL ABS Calculated Radians" , frontLeft.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("FR ABS Calculated Radians" , frontRight.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("BL ABS Calculated Radians" , backLeft.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("BR ABS Calculated Radians" , backRight.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("5V Rail Voltage", RobotController.getVoltage5V());
         SmartDashboard.putString("Swerve frontLeft current state", frontLeft.getState().toString());
         SmartDashboard.putString("Swerve frontRight current state", frontRight.getState().toString());
         SmartDashboard.putString("Swerve backLeft current state", backLeft.getState().toString());

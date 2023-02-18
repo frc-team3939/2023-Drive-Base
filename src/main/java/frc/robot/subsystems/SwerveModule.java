@@ -89,6 +89,10 @@ public class SwerveModule {
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
 
+    public double getRawAbsoluteEncoderVoltage() {
+        return absoluteEncoder.getVoltage();
+    }
+    
     public PIDController getPIDController() {
         return turningPidController;
     }

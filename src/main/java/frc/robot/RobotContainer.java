@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.List;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,47 +22,112 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.CloseClaw;
+import frc.robot.commands.ExtendToPositionPID;
+import frc.robot.commands.MoveArmExtension;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.SwivelJoystickCommand;
+import frc.robot.commands.SwivelToPositionPID;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwivleSubsystem;
 import frc.robot.commands.Turn360;
+import frc.robot.commands.ZeroHeading;
+import frc.robot.commands.ZeroSwivelEncoders;
 
 public class RobotContainer {
 
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final SwivleSubsystem swivleSubsystem = new SwivleSubsystem();
     private final ClawSubsystem clawSubsystem = new ClawSubsystem();
+    private final ExtensionSubsystem extendSubsystem = new ExtensionSubsystem();
 
     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
     private final Joystick swivelJoystick = new Joystick((OIConstants.kSwivelControllerPort));
+    private final Joystick topHalfButtonBoard = new Joystick((OIConstants.kTopHalfButtonBoardPort));
+    private final Joystick bottomHalfButtonBoard = new Joystick((OIConstants.kBottomHalfButtonBoardPort));
+
     Trigger button2 = new JoystickButton(driverJoytick, 2);
     Trigger button11 = new JoystickButton(driverJoytick, 11);
     Trigger button12 = new JoystickButton(driverJoytick, 12);
+    
+    Trigger button21 = new JoystickButton(swivelJoystick, 1);
+    Trigger button22 = new JoystickButton(swivelJoystick, 2);
+    Trigger button25 = new JoystickButton(swivelJoystick, 5);
+    Trigger button26 = new JoystickButton(swivelJoystick, 6);
+    Trigger button28 = new JoystickButton(swivelJoystick, 8);
+
+    Trigger button29 = new JoystickButton(swivelJoystick, 9);
+    Trigger button210 = new JoystickButton(swivelJoystick, 10);
+    Trigger button211 = new JoystickButton(swivelJoystick, 11);
+    Trigger button212 = new JoystickButton(swivelJoystick, 12);
+
+    Trigger buttonT1 = new JoystickButton(topHalfButtonBoard, 1);
+    Trigger buttonT2 = new JoystickButton(topHalfButtonBoard, 2);
+    Trigger buttonT3 = new JoystickButton(topHalfButtonBoard, 3);
+    Trigger buttonT4 = new JoystickButton(topHalfButtonBoard, 4);
+    Trigger buttonT5 = new JoystickButton(topHalfButtonBoard, 5);
+    Trigger buttonT6 = new JoystickButton(topHalfButtonBoard, 6);
+    Trigger buttonT7 = new JoystickButton(topHalfButtonBoard, 7);
+    Trigger buttonT8 = new JoystickButton(topHalfButtonBoard, 8);
+    Trigger buttonT9 = new JoystickButton(topHalfButtonBoard, 9);
+    Trigger buttonT10 = new JoystickButton(topHalfButtonBoard, 10);
+
+    Trigger buttonB1 = new JoystickButton(bottomHalfButtonBoard, 1);
+    Trigger buttonB2 = new JoystickButton(bottomHalfButtonBoard, 2);
+    Trigger buttonB3 = new JoystickButton(bottomHalfButtonBoard, 3);
+    Trigger buttonB4 = new JoystickButton(bottomHalfButtonBoard, 4);
+    Trigger buttonB5 = new JoystickButton(bottomHalfButtonBoard, 5);
+    Trigger buttonB6 = new JoystickButton(bottomHalfButtonBoard, 6);
+    Trigger buttonB7 = new JoystickButton(bottomHalfButtonBoard, 7);
+    Trigger buttonB8 = new JoystickButton(bottomHalfButtonBoard, 8);
+    Trigger buttonB9 = new JoystickButton(bottomHalfButtonBoard, 9);
+    Trigger buttonB10 = new JoystickButton(bottomHalfButtonBoard, 10);
+
 
     public RobotContainer() {
         
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
                 () -> driverJoytick.getZ(),
                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
         
         swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
                 swivleSubsystem,
-                () -> driverJoytick.getRawAxis(OIConstants.kSwivelYAxis)));
+                () -> swivelJoystick.getRawAxis(OIConstants.kSwivelYAxis)));
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
-        //new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
+
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
-        button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
+        button2.onTrue(new ZeroHeading(swerveSubsystem));
+        //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new CloseClaw(clawSubsystem));
+        
+        button21.onTrue(new SwivelToPositionPID(swivleSubsystem, SmartDashboard.getNumber("Swivel Target", 0)));
+        button22.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
+        button25.onTrue(new SwivelToPositionPID(swivleSubsystem, -13));
+        button26.onTrue(new SwivelToPositionPID(swivleSubsystem, 13));
+        
+
+        buttonT1.onTrue(new SwivelToPositionPID(swivleSubsystem, -5));
+        buttonT2.onTrue(new SwivelToPositionPID(swivleSubsystem, -10));
+        buttonT3.onTrue(new SwivelToPositionPID(swivleSubsystem, -15));
+
+        buttonT5.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
+
+        buttonT6.onTrue(new MoveArmExtension(-240, extendSubsystem));
+        buttonT7.onTrue(new MoveArmExtension(-470, extendSubsystem));
+        buttonT8.onTrue(new MoveArmExtension(0, extendSubsystem));
+        
+        
+        
+
 }
 
     public Command getAutonomousCommand() {

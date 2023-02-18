@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
@@ -32,9 +33,18 @@ public class SwivelJoystickCommand extends CommandBase {
   @Override
   public void execute() {
     double yAxis = yAxisFunction.get();
-    yAxis = Math.abs(yAxis) > OIConstants.kSwivelDeadband ? yAxis * OIConstants.kSwivelMaxPercentSpeed / 100 : 0; 
-    swivleSubsystem.moveArm(yAxis);
+    if (Math.abs(yAxis) > OIConstants.kSwivelDeadband) { 
+      SmartDashboard.putBoolean("Is Deadband on?", true);
+      SmartDashboard.putNumber("swivelyAxisOutput", yAxis);
+      swivleSubsystem.moveArm(yAxis * OIConstants.kSwivelDeadband);
+    } else {
+      SmartDashboard.putBoolean("Is Deadband on?", false);
+      SmartDashboard.putNumber("swivelyAxisOutput", 0);
+      swivleSubsystem.moveArmPosition(swivleSubsystem.getArmPosition());
+    }
+
   }
+
 
   // Called once the command ends or is interrupted.
   @Override
