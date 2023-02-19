@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
@@ -14,7 +15,15 @@ public class ClawSubsystem extends SubsystemBase {
 
   
   public ClawSubsystem() {
-    clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 0, 1);
+    clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
+  }
+
+  public Value isClawOpen() {
+    return clawPneumatic.get();
+  }
+
+  public void toggleClaw() {
+    clawPneumatic.toggle();
   }
 
   public void openClaw () {

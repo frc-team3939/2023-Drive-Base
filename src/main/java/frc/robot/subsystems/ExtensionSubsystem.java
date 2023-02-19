@@ -31,6 +31,10 @@ public class ExtensionSubsystem extends SubsystemBase {
     return extendMotor.getSelectedSensorPosition();
   }
 
+  public int isLimitSwitchTripped() {
+    return extendMotor.isFwdLimitSwitchClosed();
+  }
+
   public void extendArmSpeed(double inputSpeed) {
     extendMotor.set(ControlMode.PercentOutput, inputSpeed);
   }
@@ -38,5 +42,6 @@ public class ExtensionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Extenson Motor Position", getExtensionEncoder());
+    SmartDashboard.putNumber("limit switch trip status", isLimitSwitchTripped());
   }
 }

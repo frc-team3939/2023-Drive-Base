@@ -23,16 +23,20 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.CloseClaw;
 import frc.robot.commands.ExtendToPositionPID;
+import frc.robot.commands.HomeExtensionSystem;
 import frc.robot.commands.MoveArmExtension;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.SwivelJoystickCommand;
+import frc.robot.commands.SwivelToPositionIncrement;
 import frc.robot.commands.SwivelToPositionPID;
+import frc.robot.commands.ToggleClaw;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwivleSubsystem;
 import frc.robot.commands.Turn360;
+import frc.robot.commands.ZeroExtensionSystem;
 import frc.robot.commands.ZeroHeading;
 import frc.robot.commands.ZeroSwivelEncoders;
 
@@ -48,7 +52,16 @@ public class RobotContainer {
     private final Joystick topHalfButtonBoard = new Joystick((OIConstants.kTopHalfButtonBoardPort));
     private final Joystick bottomHalfButtonBoard = new Joystick((OIConstants.kBottomHalfButtonBoardPort));
 
+    Trigger button1 = new JoystickButton(driverJoytick, 1);
     Trigger button2 = new JoystickButton(driverJoytick, 2);
+    Trigger button3 = new JoystickButton(driverJoytick, 3);
+    Trigger button4 = new JoystickButton(driverJoytick, 4);
+    Trigger button5 = new JoystickButton(driverJoytick, 5);
+    Trigger button6 = new JoystickButton(driverJoytick, 6);
+    Trigger button7 = new JoystickButton(driverJoytick, 7);
+    Trigger button8 = new JoystickButton(driverJoytick, 8);
+    Trigger button9 = new JoystickButton(driverJoytick, 9);
+    Trigger button10 = new JoystickButton(driverJoytick, 10);
     Trigger button11 = new JoystickButton(driverJoytick, 11);
     Trigger button12 = new JoystickButton(driverJoytick, 12);
     
@@ -104,8 +117,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
+        button1.onTrue(new ToggleClaw(clawSubsystem));
         button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
+        button7.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
+        button8.onTrue(new MoveArmExtension(-408, extendSubsystem));
+        button10.onTrue(new MoveArmExtension(0, extendSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new CloseClaw(clawSubsystem));
         
@@ -115,16 +132,30 @@ public class RobotContainer {
         button26.onTrue(new SwivelToPositionPID(swivleSubsystem, 13));
         
 
-        buttonT1.onTrue(new SwivelToPositionPID(swivleSubsystem, -5));
-        buttonT2.onTrue(new SwivelToPositionPID(swivleSubsystem, -10));
-        buttonT3.onTrue(new SwivelToPositionPID(swivleSubsystem, -15));
-
+        
+        buttonT1.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5)); //low
+        buttonT2.onTrue(new SwivelToPositionPID(swivleSubsystem, -13.4)); //middle 
+        buttonT3.onTrue(new SwivelToPositionPID(swivleSubsystem, -15.6)); //high
+        buttonT4.onTrue(new SwivelToPositionPID(swivleSubsystem, -14.3));
         buttonT5.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
 
-        buttonT6.onTrue(new MoveArmExtension(-240, extendSubsystem));
-        buttonT7.onTrue(new MoveArmExtension(-470, extendSubsystem));
-        buttonT8.onTrue(new MoveArmExtension(0, extendSubsystem));
-        
+        buttonT6.onTrue(new MoveArmExtension(-408, extendSubsystem)); //pickup
+        buttonT7.onTrue(new MoveArmExtension(-175, extendSubsystem)); //middle
+        buttonT8.onTrue(new MoveArmExtension(-510, extendSubsystem)); // middle cube and cone
+        //buttonT9.onTrue(new MoveArmExtension(-510, extendSubsystem)); // max extension
+        buttonT10.onTrue(new MoveArmExtension(0, extendSubsystem));
+
+        buttonB1.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
+        buttonB2.onTrue(new SwivelToPositionPID(swivleSubsystem, 13.4));
+        buttonB3.onTrue(new SwivelToPositionPID(swivleSubsystem, 15.6));
+        buttonB4.onTrue(new SwivelToPositionPID(swivleSubsystem, 14.3));
+        buttonB5.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
+
+        buttonB6.onTrue(new ZeroExtensionSystem(extendSubsystem));
+        buttonB7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
+        buttonB8.onTrue(new OpenClaw(clawSubsystem));
+        buttonB9.onTrue(new CloseClaw(clawSubsystem));
+        buttonB10.onTrue(new HomeExtensionSystem(extendSubsystem));
         
         
 
