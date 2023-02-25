@@ -121,7 +121,8 @@ public class RobotContainer {
         button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
         button7.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
-        button8.onTrue(new MoveArmExtension(-408, extendSubsystem));
+        button8.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
+        button9.onTrue(new MoveArmExtension(-408, extendSubsystem));
         button10.onTrue(new MoveArmExtension(0, extendSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new CloseClaw(clawSubsystem));
@@ -141,7 +142,7 @@ public class RobotContainer {
 
         buttonT6.onTrue(new MoveArmExtension(-408, extendSubsystem)); //pickup
         buttonT7.onTrue(new MoveArmExtension(-175, extendSubsystem)); //middle
-        buttonT8.onTrue(new MoveArmExtension(-510, extendSubsystem)); // middle cube and cone
+        buttonT8.onTrue(new MoveArmExtension(-505, extendSubsystem)); // middle cube and cone
         //buttonT9.onTrue(new MoveArmExtension(-510, extendSubsystem)); // max extension
         buttonT10.onTrue(new MoveArmExtension(0, extendSubsystem));
 
@@ -152,17 +153,18 @@ public class RobotContainer {
         buttonB5.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
 
         buttonB6.onTrue(new ZeroExtensionSystem(extendSubsystem));
-        buttonB7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
-        buttonB8.onTrue(new OpenClaw(clawSubsystem));
-        buttonB9.onTrue(new CloseClaw(clawSubsystem));
-        buttonB10.onTrue(new HomeExtensionSystem(extendSubsystem));
+        buttonB7.onTrue(new HomeExtensionSystem(extendSubsystem));
+
+        buttonB9.onTrue(new OpenClaw(clawSubsystem));
+        buttonB10.onTrue(new CloseClaw(clawSubsystem));
+        
         
         
 
 }
 
     public Command getAutonomousCommand() {
-        /* 
+           
         // 1. Create trajectory settings
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
                 AutoConstants.kMaxSpeedMetersPerSecond,
@@ -201,8 +203,5 @@ public class RobotContainer {
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectory.getInitialPose())),
                 swerveControllerCommand,
                 new InstantCommand(() -> swerveSubsystem.stopModules()));
-                */
-                
-        return null;
     }
 }

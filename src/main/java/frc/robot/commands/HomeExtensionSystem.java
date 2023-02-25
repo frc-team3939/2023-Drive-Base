@@ -32,8 +32,8 @@ public class HomeExtensionSystem extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    extendSubsystem.extendArmSpeed(0);
-    extendSubsystem.resetExtensionEncoder();
+    extendSubsystem.resetExtensionEncoder(6);
+    extendSubsystem.extendArmPosition(0);
   }
 
   // Returns true when the command should end.

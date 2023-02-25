@@ -16,6 +16,7 @@ public class ClawSubsystem extends SubsystemBase {
   
   public ClawSubsystem() {
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
+    clawPneumatic.set(Value.kReverse);
   }
 
   public Value isClawOpen() {

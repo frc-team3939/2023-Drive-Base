@@ -23,8 +23,8 @@ public class ExtensionSubsystem extends SubsystemBase {
     extendMotor.set(ControlMode.Position, movePosition);
   }
 
-  public void resetExtensionEncoder() {
-    extendMotor.setSelectedSensorPosition(0);
+  public void resetExtensionEncoder(double resetPos) {
+    extendMotor.setSelectedSensorPosition(resetPos);
   }
 
   public double getExtensionEncoder() {
