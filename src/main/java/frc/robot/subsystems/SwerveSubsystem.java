@@ -63,14 +63,14 @@ public class SwerveSubsystem extends SubsystemBase {
             false);
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-    /**private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
+    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
             new Rotation2d(0),
             new SwerveModulePosition[] {
                 new SwerveModulePosition(),
                 new SwerveModulePosition(),
                 new SwerveModulePosition(),
                 new SwerveModulePosition(),
-              }); */
+              }); 
 
     public SwerveSubsystem() {
         testValueBR = 0;
@@ -98,14 +98,22 @@ public class SwerveSubsystem extends SubsystemBase {
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
     }
-    /* 
+    
     public Pose2d getPose() {
         return odometer.getPoseMeters();
-    } */
-    /**
+    } 
+    
     public void resetOdometry(Pose2d pose) {
-        odometer.resetPosition(pose, getRotation2d());
-    } **/
+        odometer.resetPosition(
+            getRotation2d(), 
+            new SwerveModulePosition[] {
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition()
+            },
+            pose);
+    }  
 
     @Override
     public void periodic() {
