@@ -13,19 +13,19 @@ import frc.robot.subsystems.SwivleSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class SwivelToPositionPID extends PIDCommand {
+public class SwivelToPositionPIDLowPower extends PIDCommand {
   /** Creates a new SwivelToPositionPID. */
-  public SwivelToPositionPID(SwivleSubsystem swivleSubsystem, double targetPosition) {
+  public SwivelToPositionPIDLowPower (SwivleSubsystem swivleSubsystem, double targetPosition) {
     super(
         // The controller that the command will use
-        new PIDController(0.09, 0.0025, 0.001),
+        new PIDController(0.005, 0.0015, 0.003),
         // This should return the measurement
         swivleSubsystem::getArmPosition,
         // This should return the setpoint (can also be a constant)
         targetPosition,
         // This uses the output
         output -> {
-          swivleSubsystem.moveArm(MathUtil.clamp(output, -0.21, 0.21));
+          swivleSubsystem.moveArm(MathUtil.clamp(output, -0.15, 0.15));
         });
     addRequirements(swivleSubsystem);
     getController().setTolerance(0.1);

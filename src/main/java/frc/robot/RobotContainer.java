@@ -30,6 +30,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.SwivelJoystickCommand;
 import frc.robot.commands.SwivelToPositionIncrement;
 import frc.robot.commands.SwivelToPositionPID;
+import frc.robot.commands.SwivelToPositionPIDLowPower;
 import frc.robot.commands.ToggleClaw;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
@@ -107,6 +108,7 @@ public class RobotContainer {
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
                 () -> driverJoytick.getZ(),
                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                // TODO ^^^ ???????????? set to button 1
         
         swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
                 swivleSubsystem,
@@ -120,8 +122,12 @@ public class RobotContainer {
         button1.onTrue(new ToggleClaw(clawSubsystem));
         button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
-        button7.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
-        button8.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
+        button3.onTrue(new MoveArmExtension(-408, extendSubsystem));
+        button4.onTrue(new MoveArmExtension(0, extendSubsystem));
+        button5.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
+        button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
+        
+        button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
         button9.onTrue(new MoveArmExtension(-408, extendSubsystem));
         button10.onTrue(new MoveArmExtension(0, extendSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
@@ -134,7 +140,7 @@ public class RobotContainer {
         
 
         
-        buttonT1.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5)); //low
+        buttonT1.onTrue(new SwivelToPositionPIDLowPower(swivleSubsystem, -7)); //low
         buttonT2.onTrue(new SwivelToPositionPID(swivleSubsystem, -13.4)); //middle 
         buttonT3.onTrue(new SwivelToPositionPID(swivleSubsystem, -15.6)); //high
         buttonT4.onTrue(new SwivelToPositionPID(swivleSubsystem, -14.3));
@@ -146,7 +152,7 @@ public class RobotContainer {
         //buttonT9.onTrue(new MoveArmExtension(-510, extendSubsystem)); // max extension
         buttonT10.onTrue(new MoveArmExtension(0, extendSubsystem));
 
-        buttonB1.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
+        buttonB1.onTrue(new SwivelToPositionPIDLowPower(swivleSubsystem, 7));
         buttonB2.onTrue(new SwivelToPositionPID(swivleSubsystem, 13.4));
         buttonB3.onTrue(new SwivelToPositionPID(swivleSubsystem, 15.6));
         buttonB4.onTrue(new SwivelToPositionPID(swivleSubsystem, 14.3));
