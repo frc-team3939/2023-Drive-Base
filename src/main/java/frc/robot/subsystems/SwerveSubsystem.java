@@ -66,10 +66,10 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
             new Rotation2d(0),
             new SwerveModulePosition[] {
-                new SwerveModulePosition(),
-                new SwerveModulePosition(),
-                new SwerveModulePosition(),
-                new SwerveModulePosition(),
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition()
               }); 
 
     public SwerveSubsystem() {
@@ -117,9 +117,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        /**odometer.update(getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(),
-                backRight.getState());*/
+        odometer.update(
+            getRotation2d(), 
+            new SwerveModulePosition[] {
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition()
+        
+            }
+        );
         SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putString("RobotPose", odometer.getPoseMeters().toString());
         SmartDashboard.putNumber("FL ABS Voltage", frontLeft.getRawAbsoluteEncoderVoltage());
         SmartDashboard.putNumber("FR ABS Voltage", frontRight.getRawAbsoluteEncoderVoltage());
         SmartDashboard.putNumber("BL ABS Voltage", backLeft.getRawAbsoluteEncoderVoltage());

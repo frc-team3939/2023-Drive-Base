@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -43,6 +44,7 @@ public class SwerveModule {
 
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
+        turningMotor.setNeutralMode(NeutralMode.Coast);
 
         driveEncoder = driveMotor.getEncoder();
         turningEncoder = new Encoder(angleEncoderIds[0], angleEncoderIds[1]);
@@ -125,7 +127,7 @@ public class SwerveModule {
     }
 
     public void stop() {
-        driveMotor.set(0);
+        driveMotor.stopMotor();
         turningMotor.set(ControlMode.PercentOutput, 0);
     }
 }
