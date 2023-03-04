@@ -139,7 +139,8 @@ public class RobotContainer {
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
                 () -> driverJoytick.getZ(),
-                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
+                () -> driverJoytick.getRawButton(OIConstants.kDriverSlowMode)));
                
         
         swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
@@ -161,7 +162,7 @@ public class RobotContainer {
         
         button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
         button9.onTrue(new MoveArmExtension(-438, extendSubsystem));
-        button10.onTrue(new MoveArmExtension(0, extendSubsystem));
+        //button10.onTrue(new MoveArmExtension(0, extendSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new ZeroHeading(swerveSubsystem));
         

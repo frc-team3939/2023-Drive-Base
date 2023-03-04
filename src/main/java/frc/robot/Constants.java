@@ -82,6 +82,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2.5;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
+        public static final double kSlowModeSpeedMultiplier = 0.25;
+
         public static final double kEncoderCountsPerRev = 9999;
         
     }
@@ -112,6 +114,7 @@ public final class Constants {
         public static final int kDriverXAxis = 0;
         public static final int kDriverRotAxis = 4;
         public static final int kDriverFieldOrientedButtonIdx = 2;
+        public static final int kDriverSlowMode = 10;
 
         public static final int kSwivelYAxis = 1;
 
@@ -120,6 +123,7 @@ public final class Constants {
 
         public static final double kSwivelDeadband = 0.3;
         public static final double kSwivelMaxPercentSpeed = 20;
+        
 		
 
         
