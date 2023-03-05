@@ -43,7 +43,12 @@ public class SwivleSubsystem extends SubsystemBase {
     encoder.setPosition(movePosition);  
   }
 
-  
+  public boolean isRedSide() {
+    if (getArmPosition() < 0)
+      return true;
+    else 
+      return false;
+  }
 
   public void stopArm () {
     swivlemotor.set(0);

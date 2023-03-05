@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
 import java.util.function.Supplier;
+
+import edu.wpi.first.hal.ThreadsJNI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -14,18 +16,19 @@ public class SwerveJoystickCmd extends CommandBase {
 
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
-    private final Supplier<Boolean> fieldOrientedFunction, slowModeFunction;
+    private final Supplier<Boolean> fieldOrientedFunction, slowModeFunction, cubePickupFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
-            Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> slowModeFunction) {
+            Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> slowModeFunction, Supplier<Boolean> cubePickupFunction) {
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
         this.fieldOrientedFunction = fieldOrientedFunction;
         this.slowModeFunction = slowModeFunction;
+        this.cubePickupFunction = cubePickupFunction;
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
@@ -43,15 +46,21 @@ public class SwerveJoystickCmd extends CommandBase {
         double ySpeed = ySpdFunction.get();
         double turningSpeed = turningSpdFunction.get();
 
-        // 2. Apply deadband and slow limiter
+        // 2. Apply deadband and slow limiter, if cube pickup function reverse 
         xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
         ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kZDeadband ? turningSpeed : 0.0;
-
+        //slowmode
         xSpeed = slowModeFunction.get() == true ? xSpeed * DriveConstants.kSlowModeSpeedMultiplier : xSpeed;
         ySpeed = slowModeFunction.get() == true ? ySpeed * DriveConstants.kSlowModeSpeedMultiplier : ySpeed;
         turningSpeed = slowModeFunction.get() == true ? turningSpeed * DriveConstants.kSlowModeSpeedMultiplier : turningSpeed;
-        
+        //slowmode in combination with pickup
+        if (fieldOrientedFunction.get() == false) {
+            xSpeed = cubePickupFunction.get() == true ? xSpeed * -1 : xSpeed;
+            xSpeed = xSpeed * DriveConstants.kCubePickupSpeedMultiplier;
+            ySpeed = cubePickupFunction.get() == true ? ySpeed * -1 : ySpeed;
+            ySpeed = ySpeed * DriveConstants.kCubePickupSpeedMultiplier;
+        }
         // 3. Make the driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;

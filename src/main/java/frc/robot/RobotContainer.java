@@ -140,7 +140,8 @@ public class RobotContainer {
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
                 () -> driverJoytick.getZ(),
                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
-                () -> driverJoytick.getRawButton(OIConstants.kDriverSlowMode)));
+                () -> driverJoytick.getRawButton(OIConstants.kDriverSlowMode),
+                () -> swivleSubsystem.isRedSide()));
                
         
         swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
@@ -227,7 +228,7 @@ public class RobotContainer {
                         new Translation2d(-0.1, -0.7),
                         new Translation2d(-0.2, -3.25)
                 ),
-                new Pose2d(-0.2, -3.75, Rotation2d.fromDegrees(0)),
+                new Pose2d(-0.2, -4.25, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
         // Straight Back to player station
         Trajectory centerCubeChargeStation = TrajectoryGenerator.generateTrajectory(
@@ -265,7 +266,7 @@ public class RobotContainer {
                         new Translation2d(0.1, -0.7),
                         new Translation2d(0.2, -3.25)
                 ),
-                new Pose2d(0.2, -3.75, Rotation2d.fromDegrees(0)),
+                new Pose2d(0.2, -4.25, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
         // DEFAULT
         Trajectory moveBackSlightly = TrajectoryGenerator.generateTrajectory(

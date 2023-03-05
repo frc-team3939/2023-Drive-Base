@@ -83,6 +83,7 @@ public final class Constants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
         public static final double kSlowModeSpeedMultiplier = 0.25;
+        public static final double kCubePickupSpeedMultiplier = 0.6;
 
         public static final double kEncoderCountsPerRev = 9999;
         
