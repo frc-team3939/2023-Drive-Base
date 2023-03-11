@@ -156,13 +156,13 @@ public class RobotContainer {
         button1.onTrue(new ToggleClaw(clawSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
-        button3.onTrue(new MoveArmExtension(-438, extendSubsystem));
+        button3.onTrue(new MoveArmExtension(-450, extendSubsystem));
         button4.onTrue(new MoveArmExtension(0, extendSubsystem));
         button5.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
         button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
         
         button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
-        button9.onTrue(new MoveArmExtension(-438, extendSubsystem));
+        button9.onTrue(new MoveArmExtension(-450, extendSubsystem));
         //button10.onTrue(new MoveArmExtension(0, extendSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new ZeroHeading(swerveSubsystem));
