@@ -4,21 +4,36 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClawSubsystem extends SubsystemBase {
   /** Creates a new ClawSubsystem. */
   private final DoubleSolenoid clawPneumatic;
 
-  
+  private final TalonSRX clawMotor;
   public ClawSubsystem() {
+    clawMotor = new TalonSRX(21);
+    clawMotor.setNeutralMode(NeutralMode.Brake);
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
     clawPneumatic.set(Value.kReverse);
   }
 
+  public void spinClaw(double speed) {
+    clawMotor.set(ControlMode.PercentOutput, speed);
+  }
+
+  public void stopClaw() {
+    clawMotor.set(ControlMode.PercentOutput, 0);
+  }
+  
   public Value isClawOpen() {
     return clawPneumatic.get();
   }
@@ -39,8 +54,11 @@ public class ClawSubsystem extends SubsystemBase {
     clawPneumatic.set(DoubleSolenoid.Value.kOff);
   }
 
+  public int isClawLimitSwitchTripped() {
+    return clawMotor.isFwdLimitSwitchClosed();
+  }
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Claw Limit Switch", isClawLimitSwitchTripped());
   }
 }

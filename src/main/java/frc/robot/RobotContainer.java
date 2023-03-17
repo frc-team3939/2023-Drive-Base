@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -34,6 +35,9 @@ import frc.robot.commands.ExtendToPositionPID;
 import frc.robot.commands.HomeExtensionSystem;
 import frc.robot.commands.MoveArmExtension;
 import frc.robot.commands.OpenClaw;
+import frc.robot.commands.ResetSwerveEncodersCommand;
+import frc.robot.commands.SpinClaw;
+import frc.robot.commands.SpinUntilLimitClaw;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.SwivelJoystickCommand;
 import frc.robot.commands.SwivelToPositionIncrement;
@@ -86,6 +90,8 @@ public class RobotContainer {
     Trigger button10 = new JoystickButton(driverJoytick, 10);
     Trigger button11 = new JoystickButton(driverJoytick, 11);
     Trigger button12 = new JoystickButton(driverJoytick, 12);
+
+    Trigger driverPOVNorth = new POVButton(driverJoytick, 0);
     
     Trigger button21 = new JoystickButton(swivelJoystick, 1);
     Trigger button22 = new JoystickButton(swivelJoystick, 2);
@@ -153,7 +159,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
-        button1.onTrue(new ToggleClaw(clawSubsystem));
+        driverPOVNorth.whileTrue(new SpinClaw(clawSubsystem, -0.3));
+        button1.whileTrue(new SpinUntilLimitClaw(clawSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
         button3.onTrue(new MoveArmExtension(-450, extendSubsystem));
@@ -163,7 +170,7 @@ public class RobotContainer {
         
         button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
         button9.onTrue(new MoveArmExtension(-450, extendSubsystem));
-        //button10.onTrue(new MoveArmExtension(0, extendSubsystem));
+        button10.onTrue(new ResetSwerveEncodersCommand(swerveSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new ZeroHeading(swerveSubsystem));
         
@@ -188,15 +195,16 @@ public class RobotContainer {
 
         buttonB1.onTrue(new SwivelToPositionPIDLowPower(swivleSubsystem, 7));
         buttonB2.onTrue(new SwivelToPositionPID(swivleSubsystem, 13.4));
-        buttonB3.onTrue(new SwivelToPositionPID(swivleSubsystem, 15.6));
+        buttonB3.onTrue(new SwivelToPositionPID(swivleSubsystem, 16.2));
         buttonB4.onTrue(new SwivelToPositionPID(swivleSubsystem, 14.3));
         buttonB5.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
 
         buttonB6.onTrue(new ZeroExtensionSystem(extendSubsystem));
         buttonB7.onTrue(new HomeExtensionSystem(extendSubsystem));
 
-        buttonB9.onTrue(new OpenClaw(clawSubsystem));
-        buttonB10.onTrue(new CloseClaw(clawSubsystem));
+        buttonB8.onTrue(new SpinClaw(clawSubsystem, 0.07));
+        buttonB9.onTrue(new SpinUntilLimitClaw(clawSubsystem));
+        buttonB10.onTrue(new SpinClaw(clawSubsystem, -0.1));
         
         
         

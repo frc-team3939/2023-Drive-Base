@@ -18,14 +18,14 @@ public class SwivelToPositionPID extends PIDCommand {
   public SwivelToPositionPID(SwivleSubsystem swivleSubsystem, double targetPosition) {
     super(
         // The controller that the command will use
-        new PIDController(0.09, 0.0025, 0.001),
+        new PIDController(0.1, 0.0025, 0.0015),
         // This should return the measurement
         swivleSubsystem::getArmPosition,
         // This should return the setpoint (can also be a constant)
         targetPosition,
         // This uses the output
         output -> {
-          swivleSubsystem.moveArm(MathUtil.clamp(output, -0.21, 0.21));
+          swivleSubsystem.moveArm(MathUtil.clamp(output, -0.25, 0.25));
         });
     addRequirements(swivleSubsystem);
     getController().setTolerance(0.1);

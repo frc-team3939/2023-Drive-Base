@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,7 +23,7 @@ public class SwerveModule {
     private final TalonSRX turningMotor;
 
     private final RelativeEncoder driveEncoder;
-    private final Encoder turningEncoder;
+    //private final Encoder turningEncoder;
 
     private final PIDController turningPidController;
 
@@ -45,19 +45,20 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
         turningMotor.setNeutralMode(NeutralMode.Coast);
+        turningMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
         driveEncoder = driveMotor.getEncoder();
-        turningEncoder = new Encoder(angleEncoderIds[0], angleEncoderIds[1]);
+        //turningEncoder = new Encoder(angleEncoderIds[0], angleEncoderIds[1]);
         
         driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
         driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
-        turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderPPRad);
+        //turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderPPRad);
         //turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
         if (isFL = false) {
-            turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
+            turningPidController = new PIDController(ModuleConstants.kPTurning, 0.001, 0);
         } else {
-            turningPidController = new PIDController(ModuleConstants.kPTurningFL, 0.000001, 0);
+            turningPidController = new PIDController(ModuleConstants.kPTurningFL, 0.001, 0);
         }
 
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
@@ -70,11 +71,11 @@ public class SwerveModule {
     }
 
     public double getTurningPosition() {
-        return turningEncoder.getDistance();
+        return turningMotor.getSelectedSensorPosition() * ModuleConstants.kTurningEncoderPPRad * 0.25;
     }
 
     public double getRawTurningEncoder() {
-        return turningEncoder.getRaw();
+        return turningMotor.getSelectedSensorPosition();
     }
 
     public double getDriveVelocity() {
@@ -82,7 +83,7 @@ public class SwerveModule {
     }
 
     public double getTurningVelocity() {
-        return turningEncoder.getRate() * ModuleConstants.kTurningEncoderRPM2RadPerSec;
+        return turningMotor.getSelectedSensorVelocity() * (10) * ModuleConstants.kTurningEncoderPPRad * 0.25;
     }
 
     public double getAbsoluteEncoderRad() {
@@ -102,7 +103,15 @@ public class SwerveModule {
     public void resetEncoders() {
         driveEncoder.setPosition(0);
         //turningEncoder.setPosition(/*getAbsoluteEncoderRad()*/);
-        turningEncoder.reset();
+    }
+
+    /**
+     * This will set the encoder positions to based apon an angle input
+     * @param angle This is expecting an angle in radians -2pi - 2pi
+     */
+    public void setEncoderAngle(double angle){
+        angle = angle * (1 / (ModuleConstants.kTurningEncoderPPRad * 0.25));
+        turningMotor.setSelectedSensorPosition(angle);
     }
 
     public SwerveModuleState getState() {
@@ -122,7 +131,9 @@ public class SwerveModule {
         }
         state = SwerveModuleState.optimize(state, getState().angle);
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        turningMotor.set(ControlMode.PercentOutput, turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
+        double out =  turningPidController.calculate(getTurningPosition(), state.angle.getRadians());
+        turningMotor.set(ControlMode.PercentOutput, out);
+        SmartDashboard.putNumber("PID turn output" + absoluteEncoder.getChannel(), out);
         SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
     }
 

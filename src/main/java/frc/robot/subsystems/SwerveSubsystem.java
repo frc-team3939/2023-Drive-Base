@@ -13,6 +13,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+
 import java.io.PrintStream;
 
 //test
@@ -150,6 +152,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Angle Encoder Right Front", frontRight.getRawTurningEncoder());
         SmartDashboard.putNumber("Angle Encoder Left Back ", backLeft.getRawTurningEncoder());
         SmartDashboard.putNumber("Angle Encoder Right Back", backRight.getRawTurningEncoder());
+        SmartDashboard.putNumber("Angle Encoder Left Front Radians", frontLeft.getRawTurningEncoder() * ModuleConstants.kTurningEncoderPPRad * 0.25);
+        SmartDashboard.putNumber("Angle Encoder Right Front Radians", frontRight.getRawTurningEncoder() * ModuleConstants.kTurningEncoderPPRad * 0.25);
+        SmartDashboard.putNumber("Angle Encoder Left Back Radians", backLeft.getRawTurningEncoder() * ModuleConstants.kTurningEncoderPPRad * 0.25);
+        SmartDashboard.putNumber("Angle Encoder Right Back Radians", backRight.getRawTurningEncoder() * ModuleConstants.kTurningEncoderPPRad * 0.25);
+        
         //SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     }
 
@@ -177,5 +184,12 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+
+    public void resetAllWheels() {
+        frontLeft.setEncoderAngle(frontLeft.getAbsoluteEncoderRad());
+        frontRight.setEncoderAngle(frontRight.getAbsoluteEncoderRad());
+        backLeft.setEncoderAngle(backLeft.getAbsoluteEncoderRad());
+        backRight.setEncoderAngle(backRight.getAbsoluteEncoderRad());
     }
 }
