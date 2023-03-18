@@ -4,11 +4,8 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.estimator.ExtendedKalmanFilter;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtensionSubsystem;
-import frc.robot.subsystems.SwivleSubsystem;
 
 public class MoveArmExtension extends CommandBase {
   /** Creates a new MoveArmExtension. */

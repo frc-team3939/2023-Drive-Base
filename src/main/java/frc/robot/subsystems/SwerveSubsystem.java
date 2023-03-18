@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
-import java.io.PrintStream;
-
 //test
 public class SwerveSubsystem extends SubsystemBase {
     private double testValueBR;
