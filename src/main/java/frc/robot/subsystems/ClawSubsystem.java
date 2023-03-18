@@ -4,7 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -20,11 +24,18 @@ public class ClawSubsystem extends SubsystemBase {
   private final DoubleSolenoid clawPneumatic;
 
   private final CANSparkMax clawMotor;
+  private final SparkMaxPIDController pid;
+
+  private final RelativeEncoder clawCoder;
   private final DigitalInput clawLimitSwitch;
 
   public ClawSubsystem() {
     clawMotor = new CANSparkMax(39, MotorType.kBrushless);
     clawMotor.setIdleMode(IdleMode.kBrake);
+
+    clawCoder = clawMotor.getEncoder();
+    pid = clawMotor.getPIDController();
+    
     clawLimitSwitch = new DigitalInput(9);
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
     clawPneumatic.set(Value.kReverse);
@@ -54,15 +65,24 @@ public class ClawSubsystem extends SubsystemBase {
     clawPneumatic.set(DoubleSolenoid.Value.kReverse);
   }
 
+  public double getClawEncoder() {
+    return clawCoder.getPosition();
+  }
+
   public void releaseClaw () {
     clawPneumatic.set(DoubleSolenoid.Value.kOff);
   }
 
+  public void holdClawPosition() {
+    pid.setReference(getClawEncoder(), ControlType.kPosition);
+  }
+
   public boolean isClawLimitSwitchTripped() {
-    return clawLimitSwitch.get();
+    return !clawLimitSwitch.get();
   }
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Claw Limit Switch", isClawLimitSwitchTripped());
+    SmartDashboard.putNumber("ClawCoder", getClawEncoder());
   }
 }

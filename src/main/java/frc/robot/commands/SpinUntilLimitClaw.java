@@ -22,13 +22,14 @@ public class SpinUntilLimitClaw extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    clawSubsystem.spinClaw(0.5);
+    clawSubsystem.spinClaw(-0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    clawSubsystem.spinClaw(0);
+    clawSubsystem.holdClawPosition();
+    //clawSubsystem.spinClaw(0);
   }
 
   // Returns true when the command should end.

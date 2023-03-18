@@ -35,7 +35,7 @@ public class ExtensionSubsystem extends SubsystemBase {
   }
 
   public boolean isLimitSwitchTripped() {
-    return extensionLimitSwitch.get();
+    return !extensionLimitSwitch.get();
   }
 
   public void extendArmSpeed(double inputSpeed) {

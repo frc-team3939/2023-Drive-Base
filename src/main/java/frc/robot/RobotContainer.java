@@ -2,6 +2,10 @@ package frc.robot;
 
 import java.util.List;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -35,6 +40,7 @@ import frc.robot.commands.ResetSwerveEncodersCommand;
 import frc.robot.commands.SpinClaw;
 import frc.robot.commands.SpinUntilLimitClaw;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.SwerveToVision;
 import frc.robot.commands.SwivelJoystickCommand;
 import frc.robot.commands.SwivelToPositionPID;
 import frc.robot.commands.SwivelToPositionPIDLowPower;
@@ -53,6 +59,8 @@ public class RobotContainer {
     private final ClawSubsystem clawSubsystem = new ClawSubsystem();
     private final ExtensionSubsystem extendSubsystem = new ExtensionSubsystem();
 
+    private final PhotonCamera visionCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000 (1)");
+
     private final SendableChooser<String> m_autoChooser = new SendableChooser<>();
     private String selectedAuto;
     private static final String kDropOnlyAuto = "Drop Cube Only";
@@ -67,7 +75,7 @@ public class RobotContainer {
     NetworkTable fmsInfoNetworkTable = NetworkTableInstance.getDefault().getTable("FMSInfo");
 
     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
-    private final Joystick swivelJoystick = new Joystick((OIConstants.kSwivelControllerPort));
+    //private final Joystick swivelJoystick = new Joystick((OIConstants.kSwivelControllerPort));
     private final Joystick topHalfButtonBoard = new Joystick((OIConstants.kTopHalfButtonBoardPort));
     private final Joystick bottomHalfButtonBoard = new Joystick((OIConstants.kBottomHalfButtonBoardPort));
 
@@ -85,7 +93,9 @@ public class RobotContainer {
     Trigger button12 = new JoystickButton(driverJoytick, 12);
 
     Trigger driverPOVNorth = new POVButton(driverJoytick, 0);
+    Trigger driverPOVSouth = new POVButton(driverJoytick, 180);
     
+    /*
     Trigger button21 = new JoystickButton(swivelJoystick, 1);
     Trigger button22 = new JoystickButton(swivelJoystick, 2);
     Trigger button25 = new JoystickButton(swivelJoystick, 5);
@@ -96,6 +106,7 @@ public class RobotContainer {
     Trigger button210 = new JoystickButton(swivelJoystick, 10);
     Trigger button211 = new JoystickButton(swivelJoystick, 11);
     Trigger button212 = new JoystickButton(swivelJoystick, 12);
+         */
 
     Trigger buttonT1 = new JoystickButton(topHalfButtonBoard, 1);
     Trigger buttonT2 = new JoystickButton(topHalfButtonBoard, 2);
@@ -142,36 +153,42 @@ public class RobotContainer {
                 () -> driverJoytick.getRawButton(OIConstants.kDriverSlowMode),
                 () -> swivleSubsystem.isRedSide()));
                
-        
+        /*
         swivleSubsystem.setDefaultCommand(new SwivelJoystickCommand(
                 swivleSubsystem,
                 () -> swivelJoystick.getRawAxis(OIConstants.kSwivelYAxis)));
+        */
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
 
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
-        driverPOVNorth.whileTrue(new SpinClaw(clawSubsystem, -0.3));
+        driverPOVNorth.whileTrue(new SpinClaw(clawSubsystem, 0.3));
+        driverPOVNorth.onFalse(new SpinClaw(clawSubsystem, 0));
+        driverPOVSouth.whileTrue(new SpinClaw(clawSubsystem, 0.15));
+        driverPOVSouth.onFalse(new SpinClaw(clawSubsystem, 0));
         button1.whileTrue(new SpinUntilLimitClaw(clawSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
-        button3.onTrue(new MoveArmExtension(-450, extendSubsystem));
+        button3.onTrue(new MoveArmExtension(-470, extendSubsystem));
         button4.onTrue(new MoveArmExtension(0, extendSubsystem));
         button5.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
         button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
         
         button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
+        button8.whileTrue(new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult()));
         button9.onTrue(new MoveArmExtension(-450, extendSubsystem));
         button10.onTrue(new ResetSwerveEncodersCommand(swerveSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
         button12.onTrue(new ZeroHeading(swerveSubsystem));
         
+        /*
         button21.onTrue(new SwivelToPositionPID(swivleSubsystem, SmartDashboard.getNumber("Swivel Target", 0)));
         button22.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
         button25.onTrue(new SwivelToPositionPID(swivleSubsystem, -13));
         button26.onTrue(new SwivelToPositionPID(swivleSubsystem, 13));
-        
+        */
 
         
         buttonT1.onTrue(new SwivelToPositionPIDLowPower(swivleSubsystem, -7)); //low
@@ -197,7 +214,7 @@ public class RobotContainer {
 
         buttonB8.onTrue(new SpinClaw(clawSubsystem, 0.07));
         buttonB9.onTrue(new SpinUntilLimitClaw(clawSubsystem));
-        buttonB10.onTrue(new SpinClaw(clawSubsystem, -0.1));
+        buttonB10.onTrue(new SpinClaw(clawSubsystem, 0.3));
         
         
         
@@ -278,7 +295,10 @@ public class RobotContainer {
                 ),
                 new Pose2d(0, -0.3, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
-        // 3. Define PID controllers for tracking trajectory
+        
+        
+        
+                // 3. Define PID controllers for tracking trajectory
         PIDController xController = new PIDController(AutoConstants.kPXController, 0.0005, 0.0003);
         PIDController yController = new PIDController(AutoConstants.kPYController, 0.0005, 0.0003);
         ProfiledPIDController thetaController = new ProfiledPIDController(
@@ -333,10 +353,7 @@ public class RobotContainer {
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
                 //swerveControllerCommand1, 
                 //new InstantCommand(() -> swerveSubsystem.stopModules()),
-                new ParallelDeadlineGroup(
-                        new WaitCommand(0.75), 
-                        new HomeExtensionSystem(extendSubsystem)),                
-                new ZeroExtensionSystem(extendSubsystem),
+                new HomeExtensionSystem(extendSubsystem),                
                 new ParallelDeadlineGroup(
                         new WaitCommand(1.8), 
                         new SwivelToPositionPID(swivleSubsystem, -14.5)),               
@@ -344,9 +361,10 @@ public class RobotContainer {
                         new SequentialCommandGroup(
                                 new MoveArmExtension(-505, extendSubsystem),
                                 new WaitCommand(0.7),
-                                new OpenClaw(clawSubsystem),
-                                new WaitCommand(0.3),
-                                new CloseClaw(clawSubsystem),  
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.5),
+                                        new SpinClaw(clawSubsystem, 0.15)),
+                                new SpinClaw(clawSubsystem, 0),  
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(0.85)),      
                         new SwivelToPositionPID(swivleSubsystem, -14.5)),
@@ -361,10 +379,7 @@ public class RobotContainer {
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
                 //swerveControllerCommand1, 
                 //new InstantCommand(() -> swerveSubsystem.stopModules()),
-                new ParallelDeadlineGroup(
-                        new WaitCommand(0.75), 
-                        new HomeExtensionSystem(extendSubsystem)),                
-                new ZeroExtensionSystem(extendSubsystem),
+                new HomeExtensionSystem(extendSubsystem),                
                 new ParallelDeadlineGroup(
                         new WaitCommand(1.8), 
                         new SwivelToPositionPID(swivleSubsystem, -14.5)),               
@@ -372,9 +387,10 @@ public class RobotContainer {
                         new SequentialCommandGroup(
                                 new MoveArmExtension(-505, extendSubsystem),
                                 new WaitCommand(0.7),
-                                new OpenClaw(clawSubsystem),
-                                new WaitCommand(0.3),
-                                new CloseClaw(clawSubsystem),  
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.5),
+                                        new SpinClaw(clawSubsystem, 0.15)),
+                                new SpinClaw(clawSubsystem, 0),  
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(0.85)),      
                         new SwivelToPositionPID(swivleSubsystem, -14.5)),
