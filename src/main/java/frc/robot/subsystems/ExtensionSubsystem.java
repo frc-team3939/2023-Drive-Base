@@ -8,15 +8,19 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalGlitchFilter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ExtensionSubsystem extends SubsystemBase {
   /** Creates a new ExtensionSubsystem. */
   private final TalonSRX extendMotor;
+  private final DigitalInput extensionLimitSwitch;
   public ExtensionSubsystem() {
     extendMotor = new TalonSRX(33);
     extendMotor.setNeutralMode(NeutralMode.Brake);
+    extensionLimitSwitch = new DigitalInput(8);
   }
 
   public void extendArmPosition (double movePosition) {
@@ -31,8 +35,8 @@ public class ExtensionSubsystem extends SubsystemBase {
     return extendMotor.getSelectedSensorPosition();
   }
 
-  public int isLimitSwitchTripped() {
-    return extendMotor.isFwdLimitSwitchClosed();
+  public boolean isLimitSwitchTripped() {
+    return extensionLimitSwitch.get();
   }
 
   public void extendArmSpeed(double inputSpeed) {
@@ -42,6 +46,6 @@ public class ExtensionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Extenson Motor Position", getExtensionEncoder());
-    SmartDashboard.putNumber("limit switch trip status", isLimitSwitchTripped());
+    SmartDashboard.putBoolean("limit switch trip status", isLimitSwitchTripped());
   }
 }

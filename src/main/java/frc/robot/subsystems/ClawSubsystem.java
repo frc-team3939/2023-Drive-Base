@@ -7,7 +7,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.AnalogInput;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -18,20 +23,23 @@ public class ClawSubsystem extends SubsystemBase {
   /** Creates a new ClawSubsystem. */
   private final DoubleSolenoid clawPneumatic;
 
-  private final TalonSRX clawMotor;
+  private final CANSparkMax clawMotor;
+  private final DigitalInput clawLimitSwitch;
+
   public ClawSubsystem() {
-    clawMotor = new TalonSRX(21);
-    clawMotor.setNeutralMode(NeutralMode.Brake);
+    clawMotor = new CANSparkMax(39, MotorType.kBrushless);
+    clawMotor.setIdleMode(IdleMode.kBrake);
+    clawLimitSwitch = new DigitalInput(9);
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
     clawPneumatic.set(Value.kReverse);
   }
 
   public void spinClaw(double speed) {
-    clawMotor.set(ControlMode.PercentOutput, speed);
+    clawMotor.set(speed);
   }
 
   public void stopClaw() {
-    clawMotor.set(ControlMode.PercentOutput, 0);
+    clawMotor.set(0);
   }
   
   public Value isClawOpen() {
@@ -54,11 +62,11 @@ public class ClawSubsystem extends SubsystemBase {
     clawPneumatic.set(DoubleSolenoid.Value.kOff);
   }
 
-  public int isClawLimitSwitchTripped() {
-    return clawMotor.isFwdLimitSwitchClosed();
+  public boolean isClawLimitSwitchTripped() {
+    return clawLimitSwitch.get();
   }
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Claw Limit Switch", isClawLimitSwitchTripped());
+    SmartDashboard.putBoolean("Claw Limit Switch", isClawLimitSwitchTripped());
   }
 }
