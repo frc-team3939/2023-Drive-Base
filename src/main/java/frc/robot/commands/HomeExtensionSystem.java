@@ -39,9 +39,6 @@ public class HomeExtensionSystem extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (extendSubsystem.isLimitSwitchTripped() == 1) 
-      return true;
-    else
-      return false;
+    return extendSubsystem.isLimitSwitchTripped();
   }
 }

@@ -29,12 +29,12 @@ public class SpinUntilLimitClaw extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    clawSubsystem.spinClaw(0.07);
+    clawSubsystem.spinClaw(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return clawSubsystem.isClawLimitSwitchTripped() == 1 ? true : false;
+    return clawSubsystem.isClawLimitSwitchTripped();
   }
 }
