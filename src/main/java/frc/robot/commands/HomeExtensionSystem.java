@@ -24,13 +24,13 @@ public class HomeExtensionSystem extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    extendSubsystem.extendArmSpeed(0.5);
+    extendSubsystem.extendArmSpeed(1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    extendSubsystem.resetExtensionEncoder(0);
+    extendSubsystem.resetExtensionEncoder(2);
     extendSubsystem.extendArmPosition(0);
   }
 

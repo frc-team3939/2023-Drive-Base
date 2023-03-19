@@ -28,10 +28,10 @@ public class SwerveToVision extends CommandBase {
     public SwerveToVision(SwerveSubsystem swerveSubsystem, Supplier<PhotonPipelineResult> visionInfo) {
         this.swerveSubsystem = swerveSubsystem;
         this.visionInfo = visionInfo;
-        xSpdController = new PIDController(0.01, 0.0000001, 0.0001);
-        xSpdController.setTolerance(.3);
+        xSpdController = new PIDController(0.007, 0.0000001, 0.0001);
+        xSpdController.setTolerance(1.7);
         ySpdController = new PIDController(0.01, 0.0000001, 0.0001);
-        ySpdController.setTolerance(.3);
+        ySpdController.setTolerance(1.7);
         turningSpdController = new PIDController(0.01, 0.0000001, 0.0001);
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
@@ -55,6 +55,13 @@ public class SwerveToVision extends CommandBase {
                 yaw = target.getYaw();
                 pitch = target.getPitch();
                 skew = target.getSkew();
+                if (skew > 85) {
+                    yaw += 4;
+                    pitch += 6;
+                } else if (skew < -85) {
+                    yaw -= 4;
+                    pitch += 6;
+                }
         } else {
             yaw = 21.7;
             pitch = 3;
