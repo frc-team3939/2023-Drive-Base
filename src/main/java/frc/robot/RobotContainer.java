@@ -460,7 +460,7 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
-                                new HoldIfNoTarget(swivleSubsystem, visionCamera.getLatestResult()),
+                                new HoldIfNoTarget(visionCamera.getLatestResult()),
                                 new MoveArmExtension(-470, extendSubsystem),
                                 new WaitCommand(0.15),
                                 new ParallelRaceGroup(

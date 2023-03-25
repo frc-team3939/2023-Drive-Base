@@ -12,12 +12,9 @@ import frc.robot.subsystems.SwivleSubsystem;
 
 public class HoldIfNoTarget extends CommandBase {
   /** Creates a new HoldIfNoTarget. */
-  public SwivleSubsystem subsystem;
   public PhotonPipelineResult target;
-  public HoldIfNoTarget(SwivleSubsystem subsystem, PhotonPipelineResult target) {
-    this.subsystem = subsystem;
+  public HoldIfNoTarget(PhotonPipelineResult target) {
     this.target = target;
-    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
