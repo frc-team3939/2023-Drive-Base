@@ -74,6 +74,8 @@ public class RobotContainer {
     private static final String kLeftCubeCenter = "Left Cube to Center";
     private static final String kLeftCubeBack = "Left Cube to Back";
     private static final String kCenterCubeCS = "Center Cube to Charge Station";
+    private static final String kTwoCubeRight = "Two Cube Right";
+    private static final String kTwoCubeLeft = "Two Cube Left";
     
 
     NetworkTable fmsInfoNetworkTable = NetworkTableInstance.getDefault().getTable("FMSInfo");
@@ -146,6 +148,8 @@ public class RobotContainer {
         m_autoChooser.addOption("Left Cube to Center", kLeftCubeCenter);
         m_autoChooser.addOption("Left Cube Back", kLeftCubeBack);
         m_autoChooser.addOption("Center Cube to Charge Station", kCenterCubeCS);
+        m_autoChooser.addOption("Right Two Cubes", kTwoCubeRight);
+        m_autoChooser.addOption("Left Two Cubes", kTwoCubeLeft);
         SmartDashboard.putData("Autonomous Selection", m_autoChooser);
 
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
@@ -334,6 +338,7 @@ public class RobotContainer {
         SmartDashboard.putString("Autochoice", selectedAuto);
         switch (selectedAuto) {
                 case kRightCubeBack:
+                case kTwoCubeRight:
                         trajectoryToFollow = rightCubeBack;
                         trajectoryToReturn = rightCubeReturn;
                         break;
@@ -350,6 +355,7 @@ public class RobotContainer {
                         trajectoryToReturn = rightCubeReturn;
                         break;        
                 case kLeftCubeBack:
+                case kTwoCubeLeft:
                         trajectoryToFollow = leftCubeBack;
                         trajectoryToReturn = leftCubeReturn;
                         break;
@@ -529,8 +535,12 @@ public class RobotContainer {
                 case kDropOnlyAuto:
                         autonomousToFollow = autoDropOnly;
                         break;
-                default:
+                case kTwoCubeLeft:
+                case kTwoCubeRight:
                         autonomousToFollow = twoCubeGroup;
+                        break;
+                default:
+                        autonomousToFollow = autoStation3;
                         break;
         } 
         return autonomousToFollow;
