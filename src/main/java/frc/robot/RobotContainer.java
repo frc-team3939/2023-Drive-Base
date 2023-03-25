@@ -35,6 +35,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.CloseClaw;
+import frc.robot.commands.HoldIfNoTarget;
 import frc.robot.commands.HomeExtensionSystem;
 import frc.robot.commands.MoveArmExtension;
 import frc.robot.commands.OpenClaw;
@@ -198,7 +199,8 @@ public class RobotContainer {
         buttonT1.onTrue(new SwivelToPositionPIDLowPower(swivleSubsystem, -7)); //low
         buttonT2.onTrue(new SwivelToPositionPID(swivleSubsystem, -13.4)); //middle 
         buttonT3.onTrue(new SwivelToPositionPID(swivleSubsystem, -15.6)); //high
-        buttonT4.onTrue(new SwivelToPositionPID(swivleSubsystem, -14.3));
+        //buttonT4.onTrue(new SwivelToPositionPID(swivleSubsystem, -14.3));
+        buttonT4.onTrue(new MoveArmExtension(-60, extendSubsystem));
         buttonT5.onTrue(new SwivelToZeroPIDSafe(extendSubsystem, swivleSubsystem, 0));
 
         buttonT6.onTrue(new MoveArmExtension(-438, extendSubsystem)); //pickup
@@ -453,11 +455,12 @@ public class RobotContainer {
                 new InstantCommand(() -> swerveSubsystem.stopModules()),
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
-                                new WaitCommand(0.5),
+                                new WaitCommand(0.6),
                                 new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult())), 
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
+                                new HoldIfNoTarget(swivleSubsystem, visionCamera.getLatestResult()),
                                 new MoveArmExtension(-470, extendSubsystem),
                                 new WaitCommand(0.15),
                                 new SpinUntilLimitClaw(clawSubsystem),
