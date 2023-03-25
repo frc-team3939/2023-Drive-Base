@@ -80,7 +80,7 @@ public final class Constants {
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 2.75;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2.5;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
         public static final double kSlowModeSpeedMultiplier = 0.25;

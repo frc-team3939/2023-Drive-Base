@@ -463,7 +463,10 @@ public class RobotContainer {
                                 new HoldIfNoTarget(swivleSubsystem, visionCamera.getLatestResult()),
                                 new MoveArmExtension(-470, extendSubsystem),
                                 new WaitCommand(0.15),
-                                new SpinUntilLimitClaw(clawSubsystem),
+                                new ParallelRaceGroup(
+                                        new SpinUntilLimitClaw(clawSubsystem),
+                                        new WaitCommand(1.3)
+                                ),
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(.7)), 
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
