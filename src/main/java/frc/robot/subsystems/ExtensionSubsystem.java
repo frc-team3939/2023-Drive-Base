@@ -17,7 +17,7 @@ public class ExtensionSubsystem extends SubsystemBase {
   private final TalonSRX extendMotor;
   private final DigitalInput extensionLimitSwitch;
   public ExtensionSubsystem() {
-    extendMotor = new TalonSRX(33);
+    extendMotor = new TalonSRX(21);
     extendMotor.setNeutralMode(NeutralMode.Brake);
     extensionLimitSwitch = new DigitalInput(8);
   }
