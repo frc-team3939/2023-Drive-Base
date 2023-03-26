@@ -80,6 +80,7 @@ public class ClawSubsystem extends SubsystemBase {
   public boolean isClawLimitSwitchTripped() {
     return !clawLimitSwitch.get();
   }
+  
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Claw Limit Switch", isClawLimitSwitchTripped());
