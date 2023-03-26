@@ -176,7 +176,15 @@ public class RobotContainer {
         driverPOVNorth.onFalse(new SpinClaw(clawSubsystem, 0));
         driverPOVSouth.whileTrue(new SpinClaw(clawSubsystem, 0.15));
         driverPOVSouth.onFalse(new SpinClaw(clawSubsystem, 0));
-        button1.whileTrue(new ParallelCommandGroup(new MoveArmExtension(-470, extendSubsystem), new SpinUntilLimitClaw(clawSubsystem)));
+        button1.whileTrue(
+                new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                new SpinUntilLimitClaw(clawSubsystem),
+                                new MoveArmExtension(-470, extendSubsystem)
+                        ),
+                        new MoveArmExtension(0, extendSubsystem)
+                )
+        );
         button1.onFalse(new MoveArmExtension(0, extendSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
@@ -256,7 +264,7 @@ public class RobotContainer {
                         new Translation2d(-0.1, -0.7),
                         new Translation2d(-0.25, -3.25)
                 ),
-                new Pose2d(-0.25, -4.25, Rotation2d.fromDegrees(0)),
+                new Pose2d(-0.25, -4.4, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
         // Straight Back to player station
         Trajectory centerCubeChargeStation = TrajectoryGenerator.generateTrajectory(
@@ -294,7 +302,7 @@ public class RobotContainer {
                         new Translation2d(0.1, -0.7),
                         new Translation2d(0.2, -3.25)
                 ),
-                new Pose2d(0.2, -4.25, Rotation2d.fromDegrees(0)),
+                new Pose2d(0.2, -4.4, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
         // DEFAULT
         Trajectory moveBackSlightly = TrajectoryGenerator.generateTrajectory(
