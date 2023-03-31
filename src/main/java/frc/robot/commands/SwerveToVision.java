@@ -20,12 +20,18 @@ public class SwerveToVision extends CommandBase {
     private final Supplier<PhotonPipelineResult> visionInfo;
     private final PIDController xSpdController, ySpdController, turningSpdController;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private double xSpeed, ySpeed;
+    private boolean finishOnTargetLoss;
+    private PhotonPipelineResult visionResult;
+    private int targetLostCounter;
     /**
      * This command writes swerveModuleStates to a photonvision target.
      * @param swerveSubsystem Requirement parameter
      * @param visionInfo PhotonPipelineResult class, input the result
+     * @param finishOnTargetLoss IF true, command stops on target loss if LOST and NOT regained 
+     * for 20 scheduler cycles. (400 ms) For every cycle there is a target, the counter loses 1.
      */
-    public SwerveToVision(SwerveSubsystem swerveSubsystem, Supplier<PhotonPipelineResult> visionInfo) {
+    public SwerveToVision(SwerveSubsystem swerveSubsystem, Supplier<PhotonPipelineResult> visionInfo, boolean finishOnTargetLoss) {
         this.swerveSubsystem = swerveSubsystem;
         this.visionInfo = visionInfo;
         xSpdController = new PIDController(0.007, 0.0000001, 0.0001);
@@ -36,6 +42,9 @@ public class SwerveToVision extends CommandBase {
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        this.finishOnTargetLoss = finishOnTargetLoss;
+
+        targetLostCounter = 0;
         addRequirements(swerveSubsystem);
     }
 
@@ -46,7 +55,7 @@ public class SwerveToVision extends CommandBase {
     @Override
     public void execute() {
         // get vision info
-        PhotonPipelineResult visionResult = visionInfo.get();
+        visionResult = visionInfo.get();
         double yaw;
         double pitch;
         double skew;
@@ -62,15 +71,18 @@ public class SwerveToVision extends CommandBase {
                     yaw -= 4;
                     pitch += 6;
                 }
+                xSpeed = -xSpdController.calculate(yaw, 21.7);
+                ySpeed = ySpdController.calculate(pitch, 3);
+                targetLostCounter = targetLostCounter > 0 ? (targetLostCounter - 1) : 0;
         } else {
-            yaw = 21.7;
-            pitch = 3;
-            skew = 0;
+            // if no target, all speeds are ZERO.
+            xSpeed = 0;
+            ySpeed = 0;
+            targetLostCounter++;
         }
 
         // 1. Get real-time joystick inputs
-        double xSpeed = -xSpdController.calculate(yaw, 21.7);
-        double ySpeed = ySpdController.calculate(pitch, 3);
+        
         double turningSpeed = 0;
         // 3. Make the driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
@@ -93,7 +105,12 @@ public class SwerveToVision extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return xSpdController.atSetpoint() && ySpdController.atSetpoint();
+    public boolean isFinished() { 
+        // If finishontargetloss is true, the command will exit if it loses its target. 
+        // Good for distinction between autonomous and teleoperated control. 
+        // We would want it to complete if it loses target in teleop, but not in autonomous such that it does not complete the rest of the sequence.
+        return finishOnTargetLoss == true ? 
+        (xSpdController.atSetpoint() && ySpdController.atSetpoint()) || (targetLostCounter >= 20): 
+        xSpdController.atSetpoint() && ySpdController.atSetpoint();
     }
 }

@@ -194,7 +194,7 @@ public class RobotContainer {
         button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
         
         button7.onTrue(new ZeroSwivelEncoders(swivleSubsystem));
-        button8.whileTrue(new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult()));
+        button8.whileTrue(new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult(), true));
         button9.onTrue(new MoveArmExtension(-450, extendSubsystem));
         button10.onTrue(new ResetSwerveEncodersCommand(swerveSubsystem));
         button11.onTrue(new OpenClaw(clawSubsystem));
@@ -470,7 +470,7 @@ public class RobotContainer {
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
                                 new WaitCommand(0.6),
-                                new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult())), 
+                                new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult(), false)), 
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
