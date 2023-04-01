@@ -232,7 +232,7 @@ public class RobotContainer {
 
         buttonB8.onTrue(new SpinClaw(clawSubsystem, 0.07));
         buttonB9.onTrue(new SpinUntilLimitClaw(clawSubsystem));
-        buttonB10.onTrue(new SpinClaw(clawSubsystem, 0.3));
+        buttonB10.onTrue(new SpinClaw(clawSubsystem, -0.3));
         
         
         
@@ -536,7 +536,9 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, 0)),
                 new InstantCommand(() -> swerveSubsystem.stopModules())
                 ); 
-        
+        SequentialCommandGroup lowCubeDrop = new SequentialCommandGroup(
+
+        );
 
         SequentialCommandGroup autonomousToFollow;
         switch (selectedAuto) {
