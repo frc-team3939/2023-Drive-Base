@@ -35,9 +35,9 @@ public class SwerveToVision extends CommandBase {
         this.swerveSubsystem = swerveSubsystem;
         this.visionInfo = visionInfo;
         xSpdController = new PIDController(0.007, 0.0000001, 0.0001);
-        xSpdController.setTolerance(1.7);
+        xSpdController.setTolerance(2);
         ySpdController = new PIDController(0.01, 0.0000001, 0.0001);
-        ySpdController.setTolerance(1.7);
+        ySpdController.setTolerance(2.5);
         turningSpdController = new PIDController(0.01, 0.0000001, 0.0001);
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
@@ -76,6 +76,8 @@ public class SwerveToVision extends CommandBase {
                 targetLostCounter = targetLostCounter > 0 ? (targetLostCounter - 1) : 0;
         } else {
             // if no target, all speeds are ZERO.
+            xSpdController.calculate(0, 21.7);
+            ySpdController.calculate(0, 3);
             xSpeed = 0;
             ySpeed = 0;
             targetLostCounter++;

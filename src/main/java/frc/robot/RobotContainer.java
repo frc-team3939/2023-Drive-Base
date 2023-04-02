@@ -172,9 +172,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         //new JoystickButton(driverJoytick, 10).whenPressed(() -> new Turn360(swerveSubsystem));
-        driverPOVNorth.whileTrue(new SpinClaw(clawSubsystem, 0.3));
+        driverPOVNorth.whileTrue(new SpinClaw(clawSubsystem, -0.3));
         driverPOVNorth.onFalse(new SpinClaw(clawSubsystem, 0));
-        driverPOVSouth.whileTrue(new SpinClaw(clawSubsystem, 0.15));
+        driverPOVSouth.whileTrue(new SpinClaw(clawSubsystem, -0.15));
         driverPOVSouth.onFalse(new SpinClaw(clawSubsystem, 0));
         button1.whileTrue(
                 new SequentialCommandGroup(
@@ -234,6 +234,7 @@ public class RobotContainer {
         buttonB9.onTrue(new SpinUntilLimitClaw(clawSubsystem));
         buttonB10.onTrue(new SpinClaw(clawSubsystem, -0.3));
         
+
         
         
 
@@ -429,7 +430,7 @@ public class RobotContainer {
                                 new WaitCommand(0.7),
                                 new ParallelDeadlineGroup(
                                         new WaitCommand(0.5),
-                                        new SpinClaw(clawSubsystem, 0.15)),
+                                        new SpinClaw(clawSubsystem, -0.15)),
                                 new SpinClaw(clawSubsystem, 0),  
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(0.85)),      
@@ -457,7 +458,7 @@ public class RobotContainer {
                                 new WaitCommand(0.7),
                                 new ParallelDeadlineGroup(
                                         new WaitCommand(0.35),
-                                        new SpinClaw(clawSubsystem, 0.15)),
+                                        new SpinClaw(clawSubsystem, -0.15)),
                                 new SpinClaw(clawSubsystem, 0),  
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(0.85)),      
@@ -474,7 +475,7 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
                 new ParallelDeadlineGroup(
                         new SequentialCommandGroup(
-                                new HoldIfNoTarget(visionCamera.getLatestResult()),
+                                //new HoldIfNoTarget(visionCamera.getLatestResult()),
                                 new MoveArmExtension(-470, extendSubsystem),
                                 new WaitCommand(0.15),
                                 new ParallelRaceGroup(
@@ -526,7 +527,7 @@ public class RobotContainer {
                                 new WaitCommand(0.7),
                                 new ParallelDeadlineGroup(
                                         new WaitCommand(0.5),
-                                        new SpinClaw(clawSubsystem, 0.15)),
+                                        new SpinClaw(clawSubsystem, -0.15)),
                                 new SpinClaw(clawSubsystem, 0),  
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(0.85)),      
