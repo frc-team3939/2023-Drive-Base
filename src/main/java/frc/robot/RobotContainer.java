@@ -352,12 +352,21 @@ public class RobotContainer {
                 trajectoryConfigR);
         
         Trajectory leftCubeReturn = TrajectoryGenerator.generateTrajectory(
-                swerveSubsystem.getPose(),
+                new Pose2d(-.16, -4.66, new Rotation2d(0)),
                 List.of(
-                        new Translation2d(-0.2, -2.5),
-                        new Translation2d(-0.1, -0.4)
+                        new Translation2d(-0.2, -3.75),
+                        new Translation2d(-0.1, -0.45)
                 ),
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+                trajectoryConfigR);
+        
+        Trajectory leftCubeReturnMid = TrajectoryGenerator.generateTrajectory(
+                new Pose2d(-.16, -4.66, new Rotation2d(0)),
+                List.of(
+                        new Translation2d(-0.2, -3.75),
+                        new Translation2d(-0.1, -0.45)
+                ),
+                new Pose2d(-.15, -0.175, Rotation2d.fromDegrees(0)),
                 trajectoryConfigR);
         
         
@@ -503,6 +512,8 @@ public class RobotContainer {
                         new WaitCommand(1), 
                         new SwivelToPositionPID(swivleSubsystem, 0)),
                 swerveControllerCommand1,
+                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult(), false),
                 new InstantCommand(() -> swerveSubsystem.stopModules())
                 );
         
