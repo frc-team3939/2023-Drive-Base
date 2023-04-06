@@ -35,7 +35,7 @@ public class ClawSubsystem extends SubsystemBase {
 
     clawCoder = clawMotor.getEncoder();
     pid = clawMotor.getPIDController();
-    
+    pid.setP(0.5);
     clawLimitSwitch = new DigitalInput(9);
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
     clawPneumatic.set(Value.kReverse);

@@ -34,9 +34,9 @@ public class SwerveToVision extends CommandBase {
     public SwerveToVision(SwerveSubsystem swerveSubsystem, Supplier<PhotonPipelineResult> visionInfo, boolean finishOnTargetLoss) {
         this.swerveSubsystem = swerveSubsystem;
         this.visionInfo = visionInfo;
-        xSpdController = new PIDController(0.007, 0.0000001, 0.0001);
+        xSpdController = new PIDController(0.011, 0.0000001, 0.0001);
         xSpdController.setTolerance(2);
-        ySpdController = new PIDController(0.01, 0.0000001, 0.0001);
+        ySpdController = new PIDController(0.013, 0.0000001, 0.0001);
         ySpdController.setTolerance(2.5);
         turningSpdController = new PIDController(0.01, 0.0000001, 0.0001);
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);

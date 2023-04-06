@@ -9,6 +9,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.AxisCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -64,6 +66,8 @@ public class RobotContainer {
     private final ExtensionSubsystem extendSubsystem = new ExtensionSubsystem();
 
     private final PhotonCamera visionCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000 (1)");
+
+    private final AxisCamera axisCam = CameraServer.addAxisCamera("10.39.39.18");
 
     private final SendableChooser<String> m_autoChooser = new SendableChooser<>();
     private String selectedAuto;
@@ -137,9 +141,12 @@ public class RobotContainer {
     Trigger buttonB10 = new JoystickButton(bottomHalfButtonBoard, 10);
 
 
+
     public RobotContainer() {
         
         //SmartDashboard.putBoolean("Drop Auto Only?", false);
+        
+        SmartDashboard.putString("Claw Camera", "/CameraPublisher/ClawCamera/streams=mjpg:http://10.39.39.18/mjpg/video.mjpg");
 
         m_autoChooser.setDefaultOption("Drop Only", kDropOnlyAuto);
         m_autoChooser.addOption("Right Cube to Center", kRightCubeCenter);
@@ -188,7 +195,7 @@ public class RobotContainer {
         button1.onFalse(new MoveArmExtension(0, extendSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
-        button3.onTrue(new MoveArmExtension(-470, extendSubsystem));
+        button3.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
         button4.onTrue(new MoveArmExtension(0, extendSubsystem));
         button5.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
         button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
@@ -247,6 +254,15 @@ public class RobotContainer {
                 AutoConstants.kMaxSpeedMetersPerSecond,
                 AutoConstants.kMaxAccelerationMetersPerSecondSquared)
                         .setKinematics(DriveConstants.kDriveKinematics);
+        trajectoryConfig.setStartVelocity(0);
+        trajectoryConfig.setEndVelocity(0);
+
+        TrajectoryConfig trajectoryConfigR = new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                        .setKinematics(DriveConstants.kDriveKinematics);
+        trajectoryConfig.setStartVelocity(0);
+        trajectoryConfig.setEndVelocity(0);
         
         // Left Cube
         Trajectory leftCubetoCenter = TrajectoryGenerator.generateTrajectory(
@@ -303,7 +319,7 @@ public class RobotContainer {
                         new Translation2d(0.1, -0.7),
                         new Translation2d(0.2, -3.25)
                 ),
-                new Pose2d(0.2, -4.4, Rotation2d.fromDegrees(0)),
+                new Pose2d(-0.08, -4.4, Rotation2d.fromDegrees(0)),
                 trajectoryConfig);
         // DEFAULT
         Trajectory moveBackSlightly = TrajectoryGenerator.generateTrajectory(
@@ -316,14 +332,25 @@ public class RobotContainer {
                 trajectoryConfig);
         
         Trajectory rightCubeReturn = TrajectoryGenerator.generateTrajectory(
-                swerveSubsystem.getPose(),
+                //swerveSubsystem.getPose(),
+                new Pose2d(-.16, -4.66, new Rotation2d(0)),
                 List.of(
-                        new Translation2d(0.2, -3.5),
-                        new Translation2d(0.1, -1.25)
+                        new Translation2d(0.2, -3.75),
+                        new Translation2d(0.1, -0.65)
                 ),
-                new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                trajectoryConfig);
-                
+                new Pose2d(-0.15, -0.05, Rotation2d.fromDegrees(0)),
+                trajectoryConfigR);
+
+        Trajectory rightCubeReturnMid = TrajectoryGenerator.generateTrajectory(
+                //swerveSubsystem.getPose(),
+                new Pose2d(-.16, -4.66, new Rotation2d(0)),
+                List.of(
+                        new Translation2d(0.2, -3.75),
+                        new Translation2d(0.1, -0.45)
+                ),
+                new Pose2d(-0.15, -0.175, Rotation2d.fromDegrees(0)),
+                trajectoryConfigR);
+        
         Trajectory leftCubeReturn = TrajectoryGenerator.generateTrajectory(
                 swerveSubsystem.getPose(),
                 List.of(
@@ -331,7 +358,7 @@ public class RobotContainer {
                         new Translation2d(-0.1, -0.4)
                 ),
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                trajectoryConfig);
+                trajectoryConfigR);
         
         
                 // 3. Define PID controllers for tracking trajectory
@@ -349,7 +376,7 @@ public class RobotContainer {
                 case kRightCubeBack:
                 case kTwoCubeRight:
                         trajectoryToFollow = rightCubeBack;
-                        trajectoryToReturn = rightCubeReturn;
+                        trajectoryToReturn = rightCubeReturnMid;
                         break;
                 case kRightCubeCenter:
                         trajectoryToFollow = rightCubetoCenterTrajectory;
@@ -402,8 +429,45 @@ public class RobotContainer {
                 thetaController,
                 swerveSubsystem::setModuleStates,
                 swerveSubsystem);
+        
+        SwerveControllerCommand swerveControllerCommand3= new SwerveControllerCommand(
+                trajectoryToFollow,
+                swerveSubsystem::getPose,
+                DriveConstants.kDriveKinematics,
+                xController,
+                yController,
+                thetaController,
+                swerveSubsystem::setModuleStates,
+                swerveSubsystem);
+        SwerveControllerCommand swerveControllerCommand4= new SwerveControllerCommand(
+                trajectoryToFollow,
+                swerveSubsystem::getPose,
+                DriveConstants.kDriveKinematics,
+                xController,
+                yController,
+                thetaController,
+                swerveSubsystem::setModuleStates,
+                swerveSubsystem);
 
         SwerveControllerCommand swerveReturn = new SwerveControllerCommand(
+                trajectoryToReturn,
+                swerveSubsystem::getPose,
+                DriveConstants.kDriveKinematics,
+                xController,
+                yController,
+                thetaController,
+                swerveSubsystem::setModuleStates,
+                swerveSubsystem);
+        SwerveControllerCommand swerveReturn2 = new SwerveControllerCommand(
+                trajectoryToReturn,
+                swerveSubsystem::getPose,
+                DriveConstants.kDriveKinematics,
+                xController,
+                yController,
+                thetaController,
+                swerveSubsystem::setModuleStates,
+                swerveSubsystem);
+        SwerveControllerCommand swerveReturn3 = new SwerveControllerCommand(
                 trajectoryToReturn,
                 swerveSubsystem::getPose,
                 DriveConstants.kDriveKinematics,
@@ -487,12 +551,12 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
                 new ParallelDeadlineGroup(
                         new WaitCommand(1), 
-                        new SwivelToPositionPID(swivleSubsystem, 0))//,
-                /* 
+                        new SwivelToPositionPID(swivleSubsystem, 0)),
                 new ParallelRaceGroup(
                         swerveReturn,
                         new SwivelToPositionPID(swivleSubsystem, 0)),
-                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new InstantCommand(() -> swerveSubsystem.stopModules())//,
+                /* 
                 new ParallelDeadlineGroup(
                         new WaitCommand(1.8), 
                         new SwivelToPositionPID(swivleSubsystem, -14.5)),               
@@ -513,6 +577,158 @@ public class RobotContainer {
                         */
                 );
         
+        SequentialCommandGroup noFrontDeliver = new SequentialCommandGroup(
+                new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
+                //swerveControllerCommand1, 
+                //new InstantCommand(() -> swerveSubsystem.stopModules()),               
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1.2), 
+                        new HomeExtensionSystem(extendSubsystem),
+                        new SequentialCommandGroup(
+                                new SwivelToPositionPID(swivleSubsystem, -14.5))),     
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.35),
+                                        new SpinClaw(clawSubsystem, -0.4)),
+                                new SpinClaw(clawSubsystem, 0)),    
+                        new SwivelToPositionPID(swivleSubsystem, -14.5)),
+                new ParallelCommandGroup(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(0.8), 
+                                new SwivelToPositionPID(swivleSubsystem, 0)),
+                        swerveControllerCommand3),
+                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult(), false)), 
+                        new SwivelToPositionPID(swivleSubsystem, 6.5)),
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                //new HoldIfNoTarget(visionCamera.getLatestResult()),
+                                new MoveArmExtension(-470, extendSubsystem),
+                                new WaitCommand(0.15),
+                                new ParallelRaceGroup(
+                                        new SpinUntilLimitClaw(clawSubsystem),
+                                        new WaitCommand(1.3)
+                                ),
+                                new MoveArmExtension(0, extendSubsystem),
+                                new WaitCommand(.7)), 
+                        new SwivelToPositionPID(swivleSubsystem, 6.5)),
+                new ParallelDeadlineGroup(
+                        swerveReturn2,
+                        new SpinUntilLimitClaw(clawSubsystem),
+                        new SequentialCommandGroup(
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(2.25), 
+                                        new SwivelToPositionPID(swivleSubsystem, 0)),
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(3), 
+                                        new SwivelToPositionPID(swivleSubsystem, -14)))),
+                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.35),
+                                        new SpinClaw(clawSubsystem, -0.4)),
+                                new SpinClaw(clawSubsystem, 0)),  
+                        new SwivelToPositionPID(swivleSubsystem, -14)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(0.8), 
+                        new SwivelToPositionPID(swivleSubsystem, 0))
+                /* 
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1.8), 
+                        new SwivelToPositionPID(swivleSubsystem, -14.5)),               
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new MoveArmExtension(-505, extendSubsystem),
+                                new WaitCommand(0.7),
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.35),
+                                        new SpinClaw(clawSubsystem, 0.15)),
+                                new SpinClaw(clawSubsystem, 0),  
+                                new MoveArmExtension(0, extendSubsystem),
+                                new WaitCommand(0.8)),      
+                        new SwivelToPositionPID(swivleSubsystem, -14.5)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1), 
+                        new SwivelToPositionPID(swivleSubsystem, 0)) 
+                        */
+                );
+        
+        SequentialCommandGroup kickCube = new SequentialCommandGroup(
+                new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
+                //swerveControllerCommand1, 
+                //new InstantCommand(() -> swerveSubsystem.stopModules()),               
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                new ParallelDeadlineGroup(
+                                        new HomeExtensionSystem(extendSubsystem),
+                                        new SwivelToPositionPID(swivleSubsystem, -4.5)),
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(1), 
+                                        new SwivelToPositionPID(swivleSubsystem, 0))),
+                        swerveControllerCommand4),
+                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new WaitCommand(0.5),
+                                new SwerveToVision(swerveSubsystem, () -> visionCamera.getLatestResult(), false)), 
+                        new SwivelToPositionPID(swivleSubsystem, 6.5)),
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                //new HoldIfNoTarget(visionCamera.getLatestResult()),
+                                new MoveArmExtension(-470, extendSubsystem),
+                                new WaitCommand(0.15),
+                                new ParallelRaceGroup(
+                                        new SpinUntilLimitClaw(clawSubsystem),
+                                        new WaitCommand(1.3)
+                                ),
+                                new MoveArmExtension(0, extendSubsystem),
+                                new WaitCommand(.7)), 
+                        new SwivelToPositionPID(swivleSubsystem, 6.5)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(0.1), 
+                        new SwivelToPositionPID(swivleSubsystem, 0)),
+                new ParallelRaceGroup(
+                        swerveReturn3,
+                        new SwivelToPositionPID(swivleSubsystem, 0)),
+                new InstantCommand(() -> swerveSubsystem.stopModules()),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1.3), 
+                        new SwivelToPositionPID(swivleSubsystem, -15.6)),     
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.25),
+                                        new SpinClaw(clawSubsystem, -0.3)),
+                                new SpinClaw(clawSubsystem, 0)),  
+                        new SwivelToPositionPID(swivleSubsystem, -15.6)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(0.8), 
+                        new SwivelToPositionPID(swivleSubsystem, 0))
+                /* 
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1.8), 
+                        new SwivelToPositionPID(swivleSubsystem, -14.5)),               
+                new ParallelDeadlineGroup(
+                        new SequentialCommandGroup(
+                                new MoveArmExtension(-505, extendSubsystem),
+                                new WaitCommand(0.7),
+                                new ParallelDeadlineGroup(
+                                        new WaitCommand(0.35),
+                                        new SpinClaw(clawSubsystem, 0.15)),
+                                new SpinClaw(clawSubsystem, 0),  
+                                new MoveArmExtension(0, extendSubsystem),
+                                new WaitCommand(0.8)),      
+                        new SwivelToPositionPID(swivleSubsystem, -14.5)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1), 
+                        new SwivelToPositionPID(swivleSubsystem, 0)) 
+                        */
+                );
+
         SequentialCommandGroup autoDropOnly = new SequentialCommandGroup(
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
                 //swerveControllerCommand1, 
@@ -537,6 +753,8 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, 0)),
                 new InstantCommand(() -> swerveSubsystem.stopModules())
                 ); 
+
+        
         SequentialCommandGroup lowCubeDrop = new SequentialCommandGroup(
 
         );
@@ -548,7 +766,7 @@ public class RobotContainer {
                         break;
                 case kTwoCubeLeft:
                 case kTwoCubeRight:
-                        autonomousToFollow = twoCubeGroup;
+                        autonomousToFollow = noFrontDeliver;
                         break;
                 default:
                         autonomousToFollow = autoStation3;
