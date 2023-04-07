@@ -195,8 +195,8 @@ public class RobotContainer {
         button1.onFalse(new MoveArmExtension(0, extendSubsystem));
         //button2.onTrue(new ZeroHeading(swerveSubsystem));
         //button2.onTrue(new Turn360(swerveSubsystem, new SwerveModuleState(0.03, new Rotation2d(swerveSubsystem.testBR()))));
-        button3.onTrue(new SwivelToPositionPID(swivleSubsystem, 0));
-        button4.onTrue(new MoveArmExtension(0, extendSubsystem));
+        button3.onTrue(new SwivelToZeroPIDSafe(extendSubsystem, swivleSubsystem, 0));
+        button4.onTrue(new SwivelToZeroPIDSafe(extendSubsystem, swivleSubsystem, 0));
         button5.onTrue(new SwivelToPositionPID(swivleSubsystem, 6.5));
         button6.onTrue(new SwivelToPositionPID(swivleSubsystem, -6.5));
         
@@ -352,7 +352,7 @@ public class RobotContainer {
                 trajectoryConfigR);
         
         Trajectory leftCubeReturn = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(-.16, -4.66, new Rotation2d(0)),
+                new Pose2d(-.3, -4.66, new Rotation2d(0)),
                 List.of(
                         new Translation2d(-0.2, -3.75),
                         new Translation2d(-0.1, -0.45)
@@ -361,7 +361,7 @@ public class RobotContainer {
                 trajectoryConfigR);
         
         Trajectory leftCubeReturnMid = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(-.16, -4.66, new Rotation2d(0)),
+                new Pose2d(-.2, -4.66, new Rotation2d(0)),
                 List.of(
                         new Translation2d(-0.2, -3.75),
                         new Translation2d(-0.1, -0.45)
@@ -402,7 +402,7 @@ public class RobotContainer {
                 case kLeftCubeBack:
                 case kTwoCubeLeft:
                         trajectoryToFollow = leftCubeBack;
-                        trajectoryToReturn = leftCubeReturn;
+                        trajectoryToReturn = leftCubeReturnMid;
                         break;
                 case kLeftCubeCenter:
                         trajectoryToFollow = leftCubetoCenter;
