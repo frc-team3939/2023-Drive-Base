@@ -588,7 +588,7 @@ public class RobotContainer {
                         */
                 );
         
-        SequentialCommandGroup noFrontDeliver = new SequentialCommandGroup(
+        SequentialCommandGroup noFrontDeliver = new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(13.7), new SequentialCommandGroup(
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose())),
                 //swerveControllerCommand1, 
                 //new InstantCommand(() -> swerveSubsystem.stopModules()),               
@@ -646,7 +646,8 @@ public class RobotContainer {
                         new SwivelToPositionPID(swivleSubsystem, -14)),
                 new ParallelDeadlineGroup(
                         new WaitCommand(0.8), 
-                        new SwivelToPositionPID(swivleSubsystem, 0))
+                        new SwivelToPositionPID(swivleSubsystem, 0)))),
+                new SpinClaw(clawSubsystem, -0.5)
                 /* 
                 new ParallelDeadlineGroup(
                         new WaitCommand(1.8), 
