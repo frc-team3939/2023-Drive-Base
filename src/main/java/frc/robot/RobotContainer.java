@@ -352,7 +352,7 @@ public class RobotContainer {
                 trajectoryConfigR);
         
         Trajectory leftCubeReturn = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(-.3, -4.66, new Rotation2d(0)),
+                new Pose2d(-.17, -4.66, new Rotation2d(0)),
                 List.of(
                         new Translation2d(-0.2, -3.75),
                         new Translation2d(-0.1, -0.45)
@@ -361,7 +361,7 @@ public class RobotContainer {
                 trajectoryConfigR);
         
         Trajectory leftCubeReturnMid = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(-.2, -4.66, new Rotation2d(0)),
+                new Pose2d(-.16, -4.66, new Rotation2d(0)),
                 List.of(
                         new Translation2d(-0.2, -3.75),
                         new Translation2d(-0.1, -0.45)
@@ -626,10 +626,7 @@ public class RobotContainer {
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(.7)), 
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
-                // CHANGE PERTINENT TO CHS COMP ONLY REVERT THIS BLOCK OF CODE        
-                new SwivelToPositionPID(swivleSubsystem, 0)
-                // TODO remove above uncomment below
-                /*new ParallelDeadlineGroup(
+                new ParallelDeadlineGroup(
                         swerveReturn2,
                         new SpinUntilLimitClaw(clawSubsystem),
                         new SequentialCommandGroup(
@@ -644,7 +641,7 @@ public class RobotContainer {
                         new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(
                                         new WaitCommand(0.35),
-                                        new SpinClaw(clawSubsystem, -0.4)),
+                                        new SpinClaw(clawSubsystem, -0.5)),
                                 new SpinClaw(clawSubsystem, 0)),  
                         new SwivelToPositionPID(swivleSubsystem, -14)),
                 new ParallelDeadlineGroup(
