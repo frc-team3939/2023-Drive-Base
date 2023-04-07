@@ -626,7 +626,10 @@ public class RobotContainer {
                                 new MoveArmExtension(0, extendSubsystem),
                                 new WaitCommand(.7)), 
                         new SwivelToPositionPID(swivleSubsystem, 6.5)),
-                new ParallelDeadlineGroup(
+                // CHANGE PERTINENT TO CHS COMP ONLY REVERT THIS BLOCK OF CODE        
+                new SwivelToPositionPID(swivleSubsystem, 0)
+                // TODO remove above uncomment below
+                /*new ParallelDeadlineGroup(
                         swerveReturn2,
                         new SpinUntilLimitClaw(clawSubsystem),
                         new SequentialCommandGroup(
