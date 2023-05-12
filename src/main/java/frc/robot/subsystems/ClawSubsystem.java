@@ -31,48 +31,83 @@ public class ClawSubsystem extends SubsystemBase {
 
   public ClawSubsystem() {
     clawMotor = new CANSparkMax(39, MotorType.kBrushless);
+    // IdleMode is brake vs coast. Brake stops when it stops recieving power, coast will let it coast.
     clawMotor.setIdleMode(IdleMode.kBrake);
 
+    // This declaration gets the encoder from the motor object defined earlier. A RelativeEncoder is an object created with each CANSparkMax controller.
     clawCoder = clawMotor.getEncoder();
+    // A PID controller is a Proportion, Integral, and Derivative controller. It outputs numbers based on the input given, the parameters of the PID, and the "setpoint" or target value.
     pid = clawMotor.getPIDController();
     pid.setP(1);
+    // A digital input is the slots 0-9 on the RoboRIO in the "DIO" area. You plug in limit switches into here normally. Essentially, this declaration points to the number 9 slot on the DIO. 
     clawLimitSwitch = new DigitalInput(9);
+    // This doesn't exist on the robot, but I didn't remove it from when we did. A solenoid is a pnuematic controller that controls the off and on of the pnuematic. You'll define the forward and close ports on the pnumeatics hub for this. If it's reversed, swap the numbers.
     clawPneumatic = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, 1, 0);
+    // This ensured it was closed at the start of a match.
     clawPneumatic.set(Value.kReverse);
   }
-
+  /**
+   * Simple function to spin the claw motor at the parameter speed. 
+   * @param speed Speed between -1.0 and 1.0.
+   */
   public void spinClaw(double speed) {
+    // set(speed) is the simple way to set speed for a SparkMAX. It differs slightly from a Talon - see another subsystem for that.
     clawMotor.set(speed);
   }
-
+  /**
+   * Simple function to stop the claw. It is good to have this as opposed to running spinClaw(0), because it ensures there is no error.
+   */
   public void stopClaw() {
     clawMotor.set(0);
   }
   
+  /**
+   * Returns the status of the solenoid. Notice that it is not a boolean, but a Value enum.
+   * @return Value type object that defines the pnuematic position. (Value.kReverse vs Value.kForward vs Value.kOff)
+   */
   public Value isClawOpen() {
     return clawPneumatic.get();
   }
 
+  /**
+   * Toggles the status of the claw. toggle() goes from kReverse to kForward and vice versa - no result if used on kOff.
+   */
   public void toggleClaw() {
     clawPneumatic.toggle();
   }
 
+  /**
+   * Sets the position of the claw open.
+   */
   public void openClaw () {
     clawPneumatic.set(DoubleSolenoid.Value.kForward);
   }
 
+  /**
+   * Sets the position of the claw closed, or reverse.
+   */
   public void closeClaw () {
     clawPneumatic.set(DoubleSolenoid.Value.kReverse);
   }
 
+  /**
+   * Returns the claw encoder position. The spinning wheels do have a position - the encoder is located inside the NEO.
+   * @return The double encoder position.
+   */
   public double getClawEncoder() {
     return clawCoder.getPosition();
   }
 
+  /**
+   * Relaxes the claw by setting there to be no input.
+   */
   public void releaseClaw () {
     clawPneumatic.set(DoubleSolenoid.Value.kOff);
   }
 
+  /**
+   * Implementation of a SparkMAX's internal PID controller. 
+   */
   public void holdClawPosition() {
     pid.setReference(getClawEncoder(), ControlType.kPosition);
   }
