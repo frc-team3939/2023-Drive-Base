@@ -104,6 +104,7 @@ public class RobotContainer {
 
     Trigger driverPOVNorth = new POVButton(driverJoytick, 0);
     Trigger driverPOVSouth = new POVButton(driverJoytick, 180);
+    Trigger driverPOVWest = new POVButton(driverJoytick, 270);
     
     /*
     Trigger button21 = new JoystickButton(swivelJoystick, 1);
@@ -183,6 +184,8 @@ public class RobotContainer {
         driverPOVNorth.onFalse(new SpinClaw(clawSubsystem, 0));
         driverPOVSouth.whileTrue(new SpinClaw(clawSubsystem, -0.15));
         driverPOVSouth.onFalse(new SpinClaw(clawSubsystem, 0));
+        driverPOVWest.whileTrue(new SpinClaw(clawSubsystem, -1));
+        driverPOVWest.onFalse(new SpinClaw(clawSubsystem, 0));
         button1.whileTrue(
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
@@ -641,13 +644,13 @@ public class RobotContainer {
                         new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(
                                         new WaitCommand(0.35),
-                                        new SpinClaw(clawSubsystem, -0.5)),
+                                        new SpinClaw(clawSubsystem, -0.4)),
                                 new SpinClaw(clawSubsystem, 0)),  
                         new SwivelToPositionPID(swivleSubsystem, -14)),
                 new ParallelDeadlineGroup(
                         new WaitCommand(0.8), 
                         new SwivelToPositionPID(swivleSubsystem, 0)))),
-                new SpinClaw(clawSubsystem, -0.5)
+                new SpinClaw(clawSubsystem, -0.4)
                 /* 
                 new ParallelDeadlineGroup(
                         new WaitCommand(1.8), 
