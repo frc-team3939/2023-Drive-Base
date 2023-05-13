@@ -106,16 +106,26 @@ public class ClawSubsystem extends SubsystemBase {
   }
 
   /**
-   * Implementation of a SparkMAX's internal PID controller. 
+    * Implementation of a SparkMAX's internal PID controller. This feature is specific to SparkMAXes.
+    * This method sets the reference (or more accurately, setpoint) for the PID to approach. When called, it sets the reference point to the current position)
+    * This is done in the intention to cause it to keep still - as it is trying to approach the point it was called at)
    */
   public void holdClawPosition() {
     pid.setReference(getClawEncoder(), ControlType.kPosition);
   }
 
+  /**
+   * Returns a boolean on whether the limit switches were tripped in the intake mechanism. Notice how the value is negated - this is a simple code change due to wiring necessities.
+   * It is much easier to change code like this than wires.
+   * @return Boolean for whether limit is tripped. True is tripped, false is not.
+   */
   public boolean isClawLimitSwitchTripped() {
     return !clawLimitSwitch.get();
   }
   
+  /**
+   * Periodic function standard to all subsystems.
+   */
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Claw Limit Switch", isClawLimitSwitchTripped());
