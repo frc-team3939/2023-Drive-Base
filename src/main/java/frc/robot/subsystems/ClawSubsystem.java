@@ -34,7 +34,7 @@ public class ClawSubsystem extends SubsystemBase {
     // IdleMode is brake vs coast. Brake stops when it stops recieving power, coast will let it coast.
     clawMotor.setIdleMode(IdleMode.kBrake);
 
-    // This declaration gets the encoder from the motor object defined earlier. A RelativeEncoder is an object created with each CANSparkMax controller.
+    // This assignment gets the encoder from the motor object defined earlier. A RelativeEncoder is an object created with each CANSparkMax controller.
     clawCoder = clawMotor.getEncoder();
     // A PID controller is a Proportion, Integral, and Derivative controller. It outputs numbers based on the input given, the parameters of the PID, and the "setpoint" or target value.
     pid = clawMotor.getPIDController();

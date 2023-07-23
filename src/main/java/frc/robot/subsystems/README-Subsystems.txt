@@ -1,4 +1,4 @@
-https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html - for more reading. I suggest you take a look.
+https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html - for more reading.
 Subsystems are where you define the motors and the actions that a robot can take in the most basic terms.
 Essentially, a subsystem as a whole is a grouping of motors and actions that go together (e.g. The swerve drive is a subsystem on its own
 comprised of its own swerve modules, just as the "claw" subsystem outlines the motor and actions that the claw intake can do.)

@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwivleSubsystem extends SubsystemBase {
-  /** Creates a new SwivleSubsystem. */
+  /** I let Connor create this subsystem. If you're reading this, no offense, but "swivle" is spelled swivel. (More on me. I was too lazy to change it.)
+   * Subsystem that defines the entirety of the arm swing motion.
+  */
   private final CANSparkMax swivlemotor;
   
   private final RelativeEncoder encoder;
