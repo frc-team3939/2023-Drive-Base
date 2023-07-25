@@ -15,6 +15,7 @@ normally smaller than integral. By increasing this, your motion will become smoo
 
 There are some other important parts of a PID controller.
 Tolerance is a measure of how much the setpoint can be off from the current value before it quits. The units for this is the same as the measure you are using to control the controller.
-Continuous output is telling the PID controller where it can start off and loop around to the same value - super important for measures of angle. (-180 and 180 are the same angle)
+Continuous output is telling the PID controller where it can start off and loop around to the same value - super important for measures of angle so that the
+code can smoothly transition from one end to the other. 
 The setpoint of a PID controller is the point where it is trying to get to. 
 If |setpoint - input| < tolerance, then the controller will quit. (Most likely. They won't do this if they overshoot)

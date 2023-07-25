@@ -11,22 +11,28 @@ public final class Constants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
         public static final double kDriveMotorGearRatio = 1 / 6.67;
         public static final double kTurningMotorGearRatio = 1 / 45.0;
+        // Converting revolution of motor to position moved on the ground - Multiply gear ratio, pi, and diameter to get distance around wheel.
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
+        // Converting revolution to radians - 2 pi radians per revolution.
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
+        // Converting pulses to radians. 7 was the attempt to add pulses per revolution to the calculation. 
+        // The 1.31755... is the magic number.
         public static final double kTurningEncoderPPRad = kTurningEncoderRot2Rad / 7 / 1.317552505982753;
         //public static final double kTurningEncoderPPRad = kTurningEncoderRot2Rad / 7 / 1.2;
+        // Drive RPM to m/s - since we have a conversion from revolutions to meters already, all we need to do is handle minutes -> seconds.
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
+        // Similar situation for turning RPM to rad/s. 
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
+        
         public static final double kPTurning = 1.5;
         public static final double kPTurningFL = 1.5;
     }
 
     public static final class DriveConstants {
-
-        public static final double kTrackWidth = Units.inchesToMeters(20.375);
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(24);
+        public static final double kTrackWidth = Units.inchesToMeters(20.375);
         // Distance between front and back wheels
+        public static final double kWheelBase = Units.inchesToMeters(24);
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),

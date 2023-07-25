@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
-//test
+/**
+ * This is the
+ */
 public class SwerveSubsystem extends SubsystemBase {
     private double testValueBR;
     private final SwerveModule frontLeft = new SwerveModule(
@@ -72,6 +74,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 backRight.getPosition()
               }); 
 
+    // Rarely is a constructor in a 
     public SwerveSubsystem() {
         testValueBR = 0;
         new Thread(() -> {
@@ -91,6 +94,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
 
+    // Test function with no use
     public double[] getWheelAbsReadings() {
         return null;
 
@@ -117,6 +121,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Update the odometer to accurately track robot position.
         odometer.update(
             getRotation2d(), 
             new SwerveModulePosition[] {
@@ -127,6 +132,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
             }
         );
+        // Lots of SmartDashboard output here, but be sure nothing too intensive goes in a periodic function
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putString("RobotPose", odometer.getPoseMeters().toString());
         SmartDashboard.putNumber("FL ABS Voltage", frontLeft.getRawAbsoluteEncoderVoltage());
@@ -159,7 +165,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     
-
+    // Test function - I don't even remember what this is for
     public double testBR() {
         
         testValueBR = testValueBR + Math.PI/4;
@@ -173,9 +179,15 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.stop();
         backRight.stop();
     }
+    // Test function
     public boolean getBRTurningSetpoint() {
         return backRight.getPIDController().atSetpoint();
     }
+    /**
+     * Takes in an array of SwerveModuleStates that the joystick command calculates, and distributes it to
+     * the individual modules.
+     * @param desiredStates Array of SwerveModuleStates that contains desired states of swerve modules.
+     */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         frontLeft.setDesiredState(desiredStates[0]);
@@ -184,6 +196,9 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.setDesiredState(desiredStates[3]);
     }
 
+    /**
+     * Our attempt on autohoming. It didn't work
+     */
     public void resetAllWheels() {
         frontLeft.setEncoderAngle(frontLeft.getAbsoluteEncoderRad());
         frontRight.setEncoderAngle(frontRight.getAbsoluteEncoderRad());

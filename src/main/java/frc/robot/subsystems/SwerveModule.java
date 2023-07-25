@@ -22,6 +22,7 @@ public class SwerveModule {
      * Think of this as the template that SwerveSubsystem uses to make things simpler. It would be pretty messy to declare
      * all 4 modules (8 motors) in the same place when you need control over each pair of two individually for swerve.
      * Instead, functions that are needed for each module are placed here, and more general ones that apply to all in subsystem.
+     * Definitely check out README-SwerveClasses before going through this.
     */
     private final CANSparkMax driveMotor; 
     private final TalonSRX turningMotor;
@@ -47,9 +48,8 @@ public class SwerveModule {
      * to calculate a conversion factor for pulses to radians. Reason being that the gear ratio just made no sense in comparison to
      * the numbers we were getting. Hopefully not a problem with the mk4i's.
      * 
-     * This code actually just doesn't use the absolute encoders. Anthony came in to try and help with that one day and we just didn't
-     * get anywhere with it. The offsets all looked right, and we reset the encoder counts to the positions they should have been in.
-     * The wheels ended up crooked every time. Code for autohoming may be available online for mk4i's so that this isn't so painful for you.
+     * There is no autohoming implementation that works in this code written here. I'ts been a while so I don't exactly remember why the
+     * implmentation in the Zero to Auto video doesn't work. Again hopefully not a problem with mk4i's.
     */
     private final AnalogInput absoluteEncoder;
     private final boolean absoluteEncoderReversed;
@@ -70,17 +70,39 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
         turningMotor.setNeutralMode(NeutralMode.Coast);
+        /** Specifically tells the Talon that the input device is a quadrature encoder.
+         * A quadrature encoder is used for many applications in FRC, and is pretty much the only use besides absolute.
+         * They do not track absolute position, but can provide direction of rotation information.
+         * This encoder can then be accessed through getSelectedSensorPosition() and other related methods.
+         * */  
         turningMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
+        // Assigns the object inherent to the NEO to the RelativeEncoder.
         driveEncoder = driveMotor.getEncoder();
         //turningEncoder = new Encoder(angleEncoderIds[0], angleEncoderIds[1]);
         
+        /** For on the fly swerve measurements, it is simpler if the code itself can calculate position/speed/angular velocity.
+         * These tell the encoders how far a pulse/revolution is compared to a meter. Right click the values and go to
+         * definition to see how they are calculated.
+         * For a RelativeEncoder object, setPositionConversionFactor/setVelocityConversionFactor converts 
+         * a revolution of the motor to distance using your number. The encoder has more resolution than that,
+         * but it makes it easier to convert because you don't need to know the resolution of the NEO encoder.
+         * 
+         * Then, you can access these adjusted values using getPosition()/getVelocity() to make life easier.
+         * 
+         * Below, the conversions for the turning encoder are commented out and applied directly in the functions that 
+         * return values for position/velocity. I'm actually not sure why that is - I think it's because I was troubleshooting
+         * errors in the conversion and was seeing if that was the problem (it was not). 
+         * That magic number is in kTurningEncoderPPRad. There's no math that makes that number make sense, but it works.
+         */
         driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
         driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
         //turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderPPRad);
         //turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
         /** I used a different PID controller for the front left motor because it was harder to move. 
+         * However, we then fixed the problem with that module, so essentially this distinction has no use - just was never removed.
+         * (Both have proprotions of 1.5.)
          * Assigns PIDControllers for each swerve module. 
          */
         if (isFL = false) {
@@ -89,32 +111,57 @@ public class SwerveModule {
             turningPidController = new PIDController(ModuleConstants.kPTurningFL, 0.001, 0);
         }
 
-        // 
+        // PIDLoops.txt
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
+        // Running a function to resetencoders to make sure all counts are zero on creation. Redundant and not necessary. 
         resetEncoders();
     }
 
+    /**
+     * Returns converted drive position.
+     * @return Distance that the motor has moved converted to meters travelled on the ground.
+     */
     public double getDrivePosition() {
         return driveEncoder.getPosition();
     }
 
+    /**
+     * Returns converted angle motor position.
+     * @return Location of the wheel relative to zero in radians.
+     */
     public double getTurningPosition() {
         return turningMotor.getSelectedSensorPosition() * ModuleConstants.kTurningEncoderPPRad * 0.25;
     }
 
+    /**
+     * Returns raw angle encoder counts.
+     * @return Turning motor position in encoder pulses.
+     */
     public double getRawTurningEncoder() {
         return turningMotor.getSelectedSensorPosition();
     }
 
+    /**
+     * Returns the velocity of the wheel in meters per second.
+     * @return Velocity of the drive wheel in m/s.
+     */
     public double getDriveVelocity() {
         return driveEncoder.getVelocity();
     }
 
+    /**
+     * Returns the angular velocity of the wheel in rad/s.
+     * @return Angular velocity of the wheel in rad/s.
+     */
     public double getTurningVelocity() {
         return turningMotor.getSelectedSensorVelocity() * (10) * ModuleConstants.kTurningEncoderPPRad * 0.25;
     }
 
+    /**
+     * Returns the absolute position of the wheel, including offsets relative to straight forward.
+     * @return Radians deviated from straight forward.
+     */
     public double getAbsoluteEncoderRad() {
         double angle = absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
         angle *= 2.0 * Math.PI;
@@ -122,13 +169,29 @@ public class SwerveModule {
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
 
+    /**
+     * Returns the raw voltage from the absolute encoder on this swerve module.
+     * @return Voltage from 0-5V.
+     */
     public double getRawAbsoluteEncoderVoltage() {
         return absoluteEncoder.getVoltage();
     }
     
+    /**
+     * Returns the PIDController object used turning this module.
+     * I'm not sure why this is implemented. The PIDController is marked final and can't be edited and I'm pretty sure I didn't use this
+     * anywhere else.
+     * @return PIDController object used to control movement of the turning motor.
+     */
     public PIDController getPIDController() {
         return turningPidController;
     }
+
+    /**
+     * Resets drive encoder for the module. Now that I think about it I didn't really try to see if this would work again.
+     * As a first exercise, uncomment the turningencoder line and see if autohoming works :P
+     * 
+     */
     public void resetEncoders() {
         driveEncoder.setPosition(0);
         //turningEncoder.setPosition(/*getAbsoluteEncoderRad()*/);
@@ -138,34 +201,66 @@ public class SwerveModule {
      * This will set the encoder positions to based apon an angle input
      * @param angle This is expecting an angle in radians -2pi - 2pi
      */
+    // Another byproduct of the attempt on autohoming
     public void setEncoderAngle(double angle){
         angle = angle * (1 / (ModuleConstants.kTurningEncoderPPRad * 0.25));
         turningMotor.setSelectedSensorPosition(angle);
     }
 
+    /**
+         * Returns the SwerveModuleState object for this swerve module.
+         * SwerveModuleState is a snapshot of the drive velocity and rotation of this swerve module)
+         * It's used in calculating the correct module states that are to be output to the wheels.
+         * Say for example, this swerve module is moving at 2m/s and is straight forward.
+         * However, based on code from the joystick command, it's requesting 5m/s and left.
+         * This object will allow for two PID controllers to be used in a single function to output the correct
+         * drive and turning power percentages to reach the requested state.
+         * (See the SwerveJoystickCmd command.)
+     * @return SwerveModuleState object of current drive status.
+     */
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
+    /**
+     * Similar to above, but contains a drive position as opposed to velocity. Useful for autonomous driving.
+     * @return SwerveModulePosition object of current drive status.
+     */
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurningPosition()));
     }
+    /**
+     * An attempt to test something by setting the motor to directly spin 
+     */
     public void testTurnMotor() {
         turningMotor.set(ControlMode.PercentOutput, 0.5);
     }
+    /**
+     * Writes desired swerve module state to the drive and turning motors.
+     * @param state Desired swerve module state. 
+     */
     public void setDesiredState(SwerveModuleState state) {
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
             return;
         }
+        /* Optimization stops a wheel from rotating too far if an equivalent angle that is closer to the target exists.
+         * It edits the state before any calculations after this.
+        */
         state = SwerveModuleState.optimize(state, getState().angle);
+        // As the speed approaches the physical max, the motor will max out at 1.
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         double out =  turningPidController.calculate(getTurningPosition(), state.angle.getRadians());
         turningMotor.set(ControlMode.PercentOutput, out);
+        // Debug
         SmartDashboard.putNumber("PID turn output" + absoluteEncoder.getChannel(), out);
         SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
     }
 
+    /**
+     * A stop function is always good in any code you write for robot subsystems.
+     * Stops module movement.
+     */
     public void stop() {
         driveMotor.stopMotor();
         turningMotor.set(ControlMode.PercentOutput, 0);
