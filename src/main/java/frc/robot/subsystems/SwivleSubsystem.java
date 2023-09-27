@@ -33,7 +33,6 @@ public class SwivleSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Swivel Target", 0);
   }
 
-
   public void zeroSwivelEncoders() {
     encoder.setPosition(0);
     followencoder.setPosition(0);

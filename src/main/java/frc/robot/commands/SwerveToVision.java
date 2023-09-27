@@ -34,11 +34,11 @@ public class SwerveToVision extends CommandBase {
     public SwerveToVision(SwerveSubsystem swerveSubsystem, Supplier<PhotonPipelineResult> visionInfo, boolean finishOnTargetLoss) {
         this.swerveSubsystem = swerveSubsystem;
         this.visionInfo = visionInfo;
-        xSpdController = new PIDController(0.011, 0.0000001, 0.0001);
+        xSpdController = new PIDController(0.011, 0, 0);
         xSpdController.setTolerance(2);
-        ySpdController = new PIDController(0.013, 0.0000001, 0.0001);
+        ySpdController = new PIDController(0.013, 0, 0);
         ySpdController.setTolerance(2.5);
-        turningSpdController = new PIDController(0.01, 0.0000001, 0.0001);
+        turningSpdController = new PIDController(0.01, 0, 0);
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
@@ -64,20 +64,24 @@ public class SwerveToVision extends CommandBase {
                 yaw = target.getYaw();
                 pitch = target.getPitch();
                 skew = target.getSkew();
-                if (skew > 85) {
-                    yaw += 4;
-                    pitch += 6;
-                } else if (skew < -85) {
-                    yaw -= 4;
-                    pitch += 6;
-                }
-                xSpeed = -xSpdController.calculate(yaw, 21.7);
-                ySpeed = ySpdController.calculate(pitch, 3);
+                // if (skew > 85) {
+                //     yaw += 4;
+                //     pitch += 6;
+                // } else if (skew < -85) {
+                //     yaw -= 4;
+                //     pitch += 6;
+                // }
+                //xSpeed = xSpdController.calculate(yaw, 21.7);
+               // ySpeed = -ySpdController.calculate(pitch, 3);
+                xSpeed = -xSpdController.calculate(yaw, 0);
+                ySpeed = ySpdController.calculate(pitch, 0);
                 targetLostCounter = targetLostCounter > 0 ? (targetLostCounter - 1) : 0;
         } else {
             // if no target, all speeds are ZERO.
-            xSpdController.calculate(0, 21.7);
-            ySpdController.calculate(0, 3);
+            //xSpdController.calculate(0, 21.7);
+           // ySpdController.calculate(0, 3);
+           // xSpdController.calculate(0, 19.5);
+            //ySpdController.calculate(0, 9);
             xSpeed = 0;
             ySpeed = 0;
             targetLostCounter++;
@@ -94,6 +98,10 @@ public class SwerveToVision extends CommandBase {
 
         // 4. Construct desired chassis speeds
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+        // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0.3, 0);
+        SmartDashboard.putNumber("visionxspeed", xSpeed);
+        SmartDashboard.putNumber("visionyspeed", ySpeed);
+        SmartDashboard.putNumber("visionturningspeed", turningSpeed);
         // 5. Convert chassis speeds to individual module states
         SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         SmartDashboard.putString("testBRD", moduleStates[3].toString());

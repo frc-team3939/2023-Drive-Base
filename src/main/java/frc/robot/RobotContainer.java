@@ -152,14 +152,20 @@ public class RobotContainer {
         m_autoChooser.setDefaultOption("Drop Only", kDropOnlyAuto);
         m_autoChooser.addOption("Right Cube to Center", kRightCubeCenter);
         m_autoChooser.addOption("Right Cube to Charge Station", kRightCubetoCS);
-        m_autoChooser.addOption("Right Cube Back", kRightCubeBack);
+        m_autoChooser.addOption("Right Cube Back (No Pickup)", kRightCubeBack);
         m_autoChooser.addOption("Left Cube to Center", kLeftCubeCenter);
-        m_autoChooser.addOption("Left Cube Back", kLeftCubeBack);
+        m_autoChooser.addOption("Left Cube Back (No Pickup)", kLeftCubeBack);
         m_autoChooser.addOption("Center Cube to Charge Station", kCenterCubeCS);
-        m_autoChooser.addOption("Right Two Cubes", kTwoCubeRight);
-        m_autoChooser.addOption("Left Two Cubes", kTwoCubeLeft);
+        m_autoChooser.addOption("Right Two Cube Auto", kTwoCubeRight);
+        m_autoChooser.addOption("Left Two Cube Auto", kTwoCubeLeft);
         SmartDashboard.putData("Autonomous Selection", m_autoChooser);
-
+        // double xscaled_=0 ;
+        // if (driverJoytick.getRawAxis(OIConstants.kDriverXAxis)>=0){
+        //   xscaled_=Math.pow(driverJoytick.getRawAxis(OIConstants.kDriverXAxis),1.4);      
+        // } else {
+        //         xscaled_=-Math.pow(-driverJoytick.getRawAxis(OIConstants.kDriverXAxis),1.4);   
+        // }
+        // final double xscaled = xscaled_;
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
